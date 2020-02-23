@@ -13,7 +13,7 @@ export class RelayConfig {
     operation: RequestParameters,
     variables: Variables
   ) {
-    return fetch("http://localhost:8080/graphql", {
+    return fetch("/graphql", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
