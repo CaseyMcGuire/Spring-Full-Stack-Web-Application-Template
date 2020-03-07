@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "baseUrl": "src/main/web-frontend",
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strictNullChecks": true,

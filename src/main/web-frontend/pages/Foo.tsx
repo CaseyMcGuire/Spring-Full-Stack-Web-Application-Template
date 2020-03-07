@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {graphql, QueryRenderer} from "react-relay";
 import {RelayConfig} from "../relay/RelayConfig";
-import {FooQuery} from "../__generated__/FooQuery.graphql";
+import {FooQuery} from "__generated__/FooQuery.graphql";
 import FooBar from "./FooBar";
 
 

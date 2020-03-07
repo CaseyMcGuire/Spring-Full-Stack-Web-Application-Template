@@ -1,11 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {QueryRenderer, graphql} from "react-relay";
-import {RelayConfig} from "./relay/RelayConfig";
-import {AppQuery} from "./__generated__/AppQuery.graphql";
+import {RelayConfig} from "relay/RelayConfig";
+import {AppQuery} from "__generated__/AppQuery.graphql";
 import {BrowserRouter, Switch, Route, Link} from "react-router-dom";
 import {createUseStyles}  from "react-jss";
-import Foo from "./pages/Foo";
+import Foo from "pages/Foo";
 
 
 const styles = createUseStyles({

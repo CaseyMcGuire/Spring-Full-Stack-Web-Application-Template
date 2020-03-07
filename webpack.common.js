@@ -6,7 +6,14 @@ module.exports = {
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"],
+    modules: [
+      // in order to use absolute paths, set the root folders.
+      // In order for typescript to also compile, the project root must match the
+      // 'base_url' field in tsconfig. In this case, this is './src/main/web-frontend'
+      path.resolve('./src/main/web-frontend'),
+      path.resolve('./node_modules')
+    ]
   },
   output: {
     filename: '[name].bundle.js',
