@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash ab8170fc5cc215d879895de23cd04965 */
+// @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
 export type AppQueryVariables = {};
@@ -23,35 +23,37 @@ query AppQuery {
 const node: ConcreteRequest = (function () {
     var v0 = [
         ({
-            "kind": "ScalarField",
             "alias": null,
-            "name": "foo",
             "args": null,
+            "kind": "ScalarField",
+            "name": "foo",
             "storageKey": null
         } as any)
     ];
     return {
-        "kind": "Request",
         "fragment": {
-            "kind": "Fragment",
-            "name": "AppQuery",
-            "type": "Query",
-            "metadata": null,
             "argumentDefinitions": [],
-            "selections": (v0 /*: any*/)
+            "kind": "Fragment",
+            "metadata": null,
+            "name": "AppQuery",
+            "selections": (v0 /*: any*/),
+            "type": "Query",
+            "abstractKey": null
         },
+        "kind": "Request",
         "operation": {
+            "argumentDefinitions": [],
             "kind": "Operation",
             "name": "AppQuery",
-            "argumentDefinitions": [],
             "selections": (v0 /*: any*/)
         },
         "params": {
-            "operationKind": "query",
-            "name": "AppQuery",
+            "cacheID": "2053495889a284eae98391d72c39e00b",
             "id": null,
-            "text": "query AppQuery {\n  foo\n}\n",
-            "metadata": {}
+            "metadata": {},
+            "name": "AppQuery",
+            "operationKind": "query",
+            "text": "query AppQuery {\n  foo\n}\n"
         }
     } as any;
 })();

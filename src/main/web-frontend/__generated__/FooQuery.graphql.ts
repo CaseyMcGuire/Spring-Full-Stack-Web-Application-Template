@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash e968f3cc7792955820b523fddcc9f259 */
+// @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -29,9 +29,7 @@ fragment FooBar_murp on Query {
 
 const node: ConcreteRequest = (function () {
     var v0 = ({
-        "kind": "ScalarField",
         "alias": null,
-        "name": "bar",
         "args": [
             {
                 "kind": "Literal",
@@ -39,46 +37,50 @@ const node: ConcreteRequest = (function () {
                 "value": "asldkfj"
             }
         ],
+        "kind": "ScalarField",
+        "name": "bar",
         "storageKey": "bar(baz:\"asldkfj\")"
     } as any);
     return {
-        "kind": "Request",
         "fragment": {
-            "kind": "Fragment",
-            "name": "FooQuery",
-            "type": "Query",
-            "metadata": null,
             "argumentDefinitions": [],
+            "kind": "Fragment",
+            "metadata": null,
+            "name": "FooQuery",
             "selections": [
                 (v0 /*: any*/),
                 {
+                    "args": null,
                     "kind": "FragmentSpread",
-                    "name": "FooBar_murp",
-                    "args": null
+                    "name": "FooBar_murp"
                 }
-            ]
+            ],
+            "type": "Query",
+            "abstractKey": null
         },
+        "kind": "Request",
         "operation": {
+            "argumentDefinitions": [],
             "kind": "Operation",
             "name": "FooQuery",
-            "argumentDefinitions": [],
             "selections": [
                 (v0 /*: any*/),
                 {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "foo",
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "foo",
                     "storageKey": null
                 }
             ]
         },
         "params": {
-            "operationKind": "query",
-            "name": "FooQuery",
+            "cacheID": "2755608d3c6cdeef1d7c59ca72037167",
             "id": null,
-            "text": "query FooQuery {\n  bar(baz: \"asldkfj\")\n  ...FooBar_murp\n}\n\nfragment FooBar_murp on Query {\n  foo\n}\n",
-            "metadata": {}
+            "metadata": {},
+            "name": "FooQuery",
+            "operationKind": "query",
+            "text": "query FooQuery {\n  bar(baz: \"asldkfj\")\n  ...FooBar_murp\n}\n\nfragment FooBar_murp on Query {\n  foo\n}\n"
         }
     } as any;
 })();

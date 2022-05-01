@@ -6,7 +6,8 @@ import {AppQuery} from "__generated__/AppQuery.graphql";
 import {BrowserRouter, Switch, Route, Link} from "react-router-dom";
 import {createUseStyles}  from "react-jss";
 import Foo from "pages/Foo";
-
+import {useLazyLoadQuery} from "react-relay/hooks";
+import {RelayEnvironmentProvider} from "react-relay/hooks";
 
 const styles = createUseStyles({
   foo: {
@@ -22,27 +23,27 @@ const styles = createUseStyles({
   }
 });
 
-export class App extends React.Component<{}> {
-  render() {
-    const query = graphql`
-      query AppQuery {
-        foo
-      }
-    `;
+export function App() {
+  console.log("alskjdflasjdf")
+  return (
+    <RelayEnvironmentProvider environment={RelayConfig.getEnvironment()}>
+      <React.Suspense fallback={null}>
+        <AppImpl />
+      </React.Suspense>
+    </RelayEnvironmentProvider>
+  );
+}
 
-    return <QueryRenderer<AppQuery>
-      environment={RelayConfig.getEnvironment()}
-      query={query}
-      variables={{}}
-      render={({error, props}) => {
-        if (props) {
-          return <Body/>
-        }
-        return <div/>;
-      }
-      }
-    />;
-  }
+function AppImpl() {
+  const query = graphql`
+    query AppQuery {
+      foo
+    }
+  `;
+
+  const response = useLazyLoadQuery<AppQuery>(query, {})
+  console.log(response)
+  return <Body />
 }
 
 const Body = () => {
