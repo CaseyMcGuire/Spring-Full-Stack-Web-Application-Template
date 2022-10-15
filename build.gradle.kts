@@ -48,7 +48,7 @@ tasks.getByName<BootRun>("bootRun") {
 }
 
 node {
-    version.set("12.16.0")
-    npmVersion.set("7.6.3")
+    version.set("16.18.0")
+    npmVersion.set("8.19.2")
     download.set(true)
 }
