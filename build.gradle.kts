@@ -17,14 +17,14 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-    compile(group = "com.expediagroup", name = "graphql-kotlin-schema-generator", version = "1.4.2")
+    implementation(group = "com.expediagroup", name = "graphql-kotlin-schema-generator", version = "1.4.2")
 
-    compile(group = "com.graphql-java", name = "graphiql-spring-boot-starter", version = "5.0.2")
+    implementation(group = "com.graphql-java", name = "graphiql-spring-boot-starter", version = "5.0.2")
 
-    compile("org.jetbrains.kotlin:kotlin-reflect:1.3.0") // https://stackoverflow.com/a/47174551/11283051
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.0") // https://stackoverflow.com/a/47174551/11283051
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
@@ -49,8 +49,6 @@ tasks.register("buildRelay", NpmTask::class) {
 tasks.getByName<BootRun>("bootRun") {
     dependsOn("npm_install", "webpack")
 }
-
-tasks
 
 node {
     version = "12.16.0"
