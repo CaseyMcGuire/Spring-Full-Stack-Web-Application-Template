@@ -4,9 +4,10 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.0"
-    id("org.springframework.boot") version "2.2.2.RELEASE"
+    id("org.springframework.boot") version "2.7.4"
     id("io.spring.dependency-management") version "1.0.6.RELEASE"
     id("com.github.node-gradle.node") version "3.4.0"
+    id("com.netflix.dgs.codegen") version "5.2.4"
 }
 
 group = "com.kotlinspringgraphlreact"
@@ -19,9 +20,8 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-
-    implementation(group = "com.expediagroup", name = "graphql-kotlin-schema-generator", version = "1.4.2")
-
+    implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
+    implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation(group = "com.graphql-java", name = "graphiql-spring-boot-starter", version = "5.0.2")
 }
 
@@ -51,4 +51,10 @@ node {
     version.set("16.18.0")
     npmVersion.set("8.19.2")
     download.set(true)
+}
+
+tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
+    schemaPaths = mutableListOf("${projectDir}/src/main/resources/schema")
+    generateClient = true
+    packageName = "com.kotlinspringgraphqlreact.graphql"
 }
