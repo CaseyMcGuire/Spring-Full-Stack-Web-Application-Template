@@ -1,13 +1,5 @@
 type Query {
-    shows(titleFilter: String): [Show]
+    bar(baz: String!): String!
+    foo: String!
 }
 
-type Show {
-    title: String
-    releaseYear: Int
-    actors: [Actor]
-}
-
-type Actor {
-    name: String
-}
