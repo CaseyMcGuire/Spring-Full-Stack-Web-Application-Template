@@ -28,7 +28,7 @@ repositories {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-  implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
+  implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:5.5.3"))
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
   implementation("org.postgresql:postgresql:42.5.1")
   jooqGenerator("org.postgresql:postgresql:42.5.1")
