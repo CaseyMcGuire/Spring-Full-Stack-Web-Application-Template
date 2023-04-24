@@ -1,37 +1,56 @@
+/**
+ * @generated SignedSource<<bceb93d7ba316f9ab44aa3dac81f13b2>>
+ * @lightSyntaxTransform
+ * @nogrep
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
 
-import { ReaderFragment } from "relay-runtime";
+import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type FooBar_murp = {
-    readonly foo: string;
-    readonly " $refType": "FooBar_murp";
+export type FooBar_murp$data = {
+  readonly foo: string;
+  readonly murp: string;
+  readonly " $fragmentType": "FooBar_murp";
 };
-export type FooBar_murp$data = FooBar_murp;
 export type FooBar_murp$key = {
-    readonly " $data"?: FooBar_murp$data;
-    readonly " $fragmentRefs": FragmentRefs<"FooBar_murp">;
+  readonly " $data"?: FooBar_murp$data;
+  readonly " $fragmentSpreads": FragmentRefs<"FooBar_murp">;
 };
 
-
-
-const node: ReaderFragment = ({
-    "argumentDefinitions": [],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "FooBar_murp",
-    "selections": [
+const node: ReaderFragment = {
+  "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "FooBar_murp",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "foo",
+      "storageKey": null
+    },
+    {
+      "alias": "murp",
+      "args": [
         {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "foo",
-            "storageKey": null
+          "kind": "Literal",
+          "name": "baz",
+          "value": "aljskdfasf"
         }
-    ],
-    "type": "Query",
-    "abstractKey": null
-} as any);
-(node as any).hash = '105d63b0a6105e18bd91dcaa8eace046';
+      ],
+      "kind": "ScalarField",
+      "name": "bar",
+      "storageKey": "bar(baz:\"aljskdfasf\")"
+    }
+  ],
+  "type": "Query",
+  "abstractKey": null
+};
+
+(node as any).hash = "692b8eb8df20e2f8f44d76dce9ba7ce8";
+
 export default node;
