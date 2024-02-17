@@ -53,14 +53,14 @@ Whenever you change a client-side GraphQL query supported by Relay, you must reb
 
 In order to change the database, you must add a new migration. Since we use Flyway for migrations, you can read about how to structure and run repeatable versus versioned migrations [here](https://documentation.red-gate.com/flyway/flyway-cli-and-api/concepts/migrations). 
 
-For simplicity, we'll assume we want to run a versioned migration. From the Flyway website:
-```
-Versioned migrations have a version, a description and a checksum. The version must be unique. The description is purely informative for you to be able to remember what each migration does. The checksum is there to detect accidental changes. Versioned migrations are the most common type of migration. They are applied in order exactly once.
+For simplicity, we'll assume we want to run a versioned migration. From the Flyway link above:
 
-Each versioned migration must be assigned a unique version. Any version is valid as long as it conforms to the usual dotted notation. For most cases a simple increasing integer should be all you need[...]
+> Versioned migrations have a version, a description and a checksum. The version must be unique. The description is purely informative for you to be able to remember what each migration does. The checksum is there to detect accidental changes. Versioned migrations are the most common type of migration. They are applied in order exactly once.
+>
+> Each versioned migration must be assigned a unique version. Any version is valid as long as it conforms to the usual dotted notation. For most cases a simple increasing integer should be all you need[...]
+>
+>Versioned migrations are applied in the order of their versions. Versions are sorted numerically as you would normally expect.
 
-Versioned migrations are applied in the order of their versions. Versions are sorted numerically as you would normally expect.
-```
 That is, the file name of the SQL file should be `<VERSION>__<short_description>.sql`. Since migrations are run in the sorted numerical order of their filenames, you should look at the version number of the last migration and increment it by 1. For example, if the first migration was named `V1__initial_setup.sql`, the second migration would be something like `V2__add_new_column.sql` and the third one could be `V3__add_second_table.sql`. 
 
 
