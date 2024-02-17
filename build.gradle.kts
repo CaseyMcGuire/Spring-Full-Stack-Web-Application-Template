@@ -3,8 +3,8 @@ import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.6.0"
-  id("org.springframework.boot") version "2.7.4"
+  id("org.jetbrains.kotlin.jvm") version "1.9.22"
+  id("org.springframework.boot") version "3.2.2"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.github.node-gradle.node") version "3.4.0"
   id("com.netflix.dgs.codegen") version "5.2.4"
@@ -13,11 +13,11 @@ plugins {
   id("java")
 }
 
-// There seems to be a bug with DGS and the io.spring.dependency-management plugin that requires this line.
-// Essentially, the spring dependency plugin tries to pull in the graphql-java version 18.3 even though the DGS plugin
-// requires 19.2. As a result, the project will fail to compile. However, this might be getting fixed soon:
-// https://github.com/Netflix/dgs-framework/issues/1281
-extra["graphql-java.version"] = "19.2"
+dependencyManagement {
+  imports {
+    mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release")
+  }
+}
 
 group = "com.kotlinspringgraphlreact"
 version = "1.0-SNAPSHOT"
@@ -29,7 +29,6 @@ repositories {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-  implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:5.5.3"))
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
   implementation("org.postgresql:postgresql:42.5.1")
   jooqGenerator("org.postgresql:postgresql:42.5.1")
