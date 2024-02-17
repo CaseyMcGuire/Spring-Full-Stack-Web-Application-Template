@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c06a49234c93f9bcbe16a93296f779cc>>
+ * @generated SignedSource<<addd8e75fec66a462b15ef189989d86b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type FooQuery$variables = {};
+export type FooQuery$variables = Record<PropertyKey, never>;
 export type FooQuery$data = {
   readonly bar: string;
   readonly " $fragmentSpreads": FragmentRefs<"FooBar_murp">;

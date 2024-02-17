@@ -1,6 +1,6 @@
 import { graphql} from "react-relay";
 import * as React from "react";
-import { FooBar_murp$key } from "../__generated__/FooBar_murp.graphql";
+import { FooBar_murp$key } from "__generated__/FooBar_murp.graphql";
 import {useFragment} from "react-relay/hooks";
 
 export default function FooBar(props: {murp: FooBar_murp$key}) {

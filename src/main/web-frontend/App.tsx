@@ -3,11 +3,17 @@ import * as ReactDOM from "react-dom";
 import {QueryRenderer, graphql} from "react-relay";
 import {RelayConfig} from "relay/RelayConfig";
 import {AppQuery} from "__generated__/AppQuery.graphql";
-import {BrowserRouter, Switch, Route, Link} from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link,
+  BrowserRouter
+} from "react-router-dom";
 import {createUseStyles}  from "react-jss";
 import Foo from "pages/Foo";
 import {useLazyLoadQuery} from "react-relay/hooks";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
+import {createRoot} from "react-dom/client";
 
 const styles = createUseStyles({
   foo: {
@@ -24,7 +30,6 @@ const styles = createUseStyles({
 });
 
 export function App() {
-  console.log("alskjdflasjdf")
   return (
     <RelayEnvironmentProvider environment={RelayConfig.getEnvironment()}>
       <React.Suspense fallback={null}>
@@ -42,7 +47,6 @@ function AppImpl() {
   `;
 
   const response = useLazyLoadQuery<AppQuery>(query, {})
-  console.log(response)
   return <Body />
 }
 
@@ -51,12 +55,12 @@ const Body = () => {
     <Link to="/">Home</Link>
     <Link to="/there">There</Link>
     <Link to="/foo_bar">foo bar</Link>
-    <Switch>
-      <Route exact path="/" component={Foo}/>
-      <Route exact path="/there" component={Bar}/>
-      <Route exact path="/foo_bar" component={Baz}/>
-      <Route component={Forohfor}/>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Foo />}/>
+      <Route path="/there" element={<Bar />}/>
+      <Route path="/foo_bar" element={<Baz /> }/>
+      <Route element={<Forohfor />}/>
+    </Routes>
   </BrowserRouter>);
 };
 
@@ -72,7 +76,5 @@ const Forohfor = () => {
   return <div>404</div>;
 };
 
-ReactDOM.render(
-  <App/>,
-  document.getElementById("root")
-);
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);

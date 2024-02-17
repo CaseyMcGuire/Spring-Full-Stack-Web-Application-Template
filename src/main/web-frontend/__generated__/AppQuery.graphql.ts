@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c943177baa6b65ae435934416fd6053f>>
+ * @generated SignedSource<<70a32c97a32180447bd887d3f419a109>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type AppQuery$variables = {};
+export type AppQuery$variables = Record<PropertyKey, never>;
 export type AppQuery$data = {
   readonly foo: string;
 };

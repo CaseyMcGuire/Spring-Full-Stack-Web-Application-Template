@@ -10,6 +10,7 @@ plugins {
   id("com.netflix.dgs.codegen") version "5.2.4"
   id("nu.studer.jooq") version "8.0"
   id("org.flywaydb.flyway") version "9.6.0"
+  id("java")
 }
 
 // There seems to be a bug with DGS and the io.spring.dependency-management plugin that requires this line.
@@ -37,13 +38,18 @@ dependencies {
   // https://flywaydb.org/documentation/usage/plugins/springboot
   // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.flywaydb:flyway-core:9.10.2")
+  implementation("org.flywaydb:flyway-core:9.16.0")
 }
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     jvmTarget = "17"
   }
+}
+
+tasks.withType<JavaCompile> {
+  sourceCompatibility = "17"
+  targetCompatibility = "17"
 }
 
 tasks.register<NpmTask>("webpack") {
@@ -55,7 +61,7 @@ tasks.register<NpmTask>("webpackDevelopment") {
 }
 
 tasks.register<NpmTask>("buildRelay") {
-  npmCommand.set(listOf("run", "compile-relay"))
+  npmCommand.set(listOf("run", "relay"))
 }
 
 tasks.getByName<BootRun>("bootRun") {
@@ -63,8 +69,8 @@ tasks.getByName<BootRun>("bootRun") {
 }
 
 node {
-  version.set("16.18.0")
-  npmVersion.set("8.19.2")
+  version.set("20.11.0")
+  npmVersion.set("10.4.0")
   download.set(true)
 }
 
