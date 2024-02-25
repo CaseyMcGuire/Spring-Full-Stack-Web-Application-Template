@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<addd8e75fec66a462b15ef189989d86b>>
+ * @generated SignedSource<<66d266c3aef973660081714caf1031c9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,14 +10,14 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type FooQuery$variables = Record<PropertyKey, never>;
-export type FooQuery$data = {
+export type HomePageQuery$variables = Record<PropertyKey, never>;
+export type HomePageQuery$data = {
   readonly bar: string;
   readonly " $fragmentSpreads": FragmentRefs<"FooBar_murp">;
 };
-export type FooQuery = {
-  response: FooQuery$data;
-  variables: FooQuery$variables;
+export type HomePageQuery = {
+  response: HomePageQuery$data;
+  variables: HomePageQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -39,7 +39,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "FooQuery",
+    "name": "HomePageQuery",
     "selections": [
       (v0/*: any*/),
       {
@@ -55,7 +55,7 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "FooQuery",
+    "name": "HomePageQuery",
     "selections": [
       (v0/*: any*/),
       {
@@ -81,16 +81,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "30647c93fa96b5e400894ff144ba8138",
+    "cacheID": "28a96c9df69b1a1d4f4ac455957531d8",
     "id": null,
     "metadata": {},
-    "name": "FooQuery",
+    "name": "HomePageQuery",
     "operationKind": "query",
-    "text": "query FooQuery {\n  bar(baz: \"asldkfj\")\n  ...FooBar_murp\n}\n\nfragment FooBar_murp on Query {\n  foo\n  murp: bar(baz: \"aljskdfasf\")\n}\n"
+    "text": "query HomePageQuery {\n  bar(baz: \"asldkfj\")\n  ...FooBar_murp\n}\n\nfragment FooBar_murp on Query {\n  foo\n  murp: bar(baz: \"aljskdfasf\")\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b03a2748be840aaf8f16509cf45220ad";
+(node as any).hash = "fbfa424d1bed52ba427f6ca2845da4bf";
 
 export default node;
