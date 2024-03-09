@@ -63,8 +63,14 @@ tasks.register<NpmTask>("buildRelay") {
   npmCommand.set(listOf("run", "relay"))
 }
 
+// make sure webpack runs before the processResources task so the TypeScript files are compiled before
+// being copied into the build folder
+tasks.processResources {
+  dependsOn("webpack")
+}
+
 tasks.getByName<BootRun>("bootRun") {
-  dependsOn("npm_install", "webpack")
+  dependsOn("npm_install")
 }
 
 node {
