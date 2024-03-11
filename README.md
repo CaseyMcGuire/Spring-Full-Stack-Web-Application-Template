@@ -19,8 +19,15 @@ This is a project template I use for creating new web applications. It uses the 
 
 1) Install [Postgres](https://www.postgresql.org/download/).
 2) Create a `.env` file in the project root directory (use `.env.example` as an example)
-3) Set the `DB_USER`, `DB_PASSWORD`, `DB_NAME`, and `DB_URL` variables in your `.env` file as your database username, password, name, and URL, respectively.
-4) Run `./bin/setup_database` in the root of the project. 
+3) Set the `DB_USER`, `DB_PASSWORD`, and `DB_NAME` variables in your `.env` file as your database username, password, name, respectively.
+4) Run `./bin/setup_database` in the root of the project.
+5) Set the `DB_URL` variable to `jdbc:postgresql://localhost:5432/${DB_NAME}` where `DB_NAME` is the name of the database specified above (you can read more about connecting to a Postgres database [here](https://www.postgresql.org/docs/6.4/jdbc19100.htm#:~:text=Defaults%20to%20%22localhost%22.)). For example, suppose our user was named `test_user`, our password `test_password`, and `DB_NAME` was `test_database`, then our `.env` would something like this:
+```
+DB_USER=test_user
+DB_PASSWORD=test_password
+DB_NAME=test_database
+DB_URL=jdbc:postgresql://localhost:5432/test_database
+```
 
 ### How to run
 In order to start:
