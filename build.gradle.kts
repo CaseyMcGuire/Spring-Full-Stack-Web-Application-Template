@@ -72,11 +72,7 @@ tasks.register<NpmTask>("generateReactPages") {
 // make sure webpack runs before the processResources task so the TypeScript files are compiled before
 // being copied into the build folder
 tasks.processResources {
-  dependsOn("webpack")
-}
-
-tasks.getByName<BootRun>("bootRun") {
-  dependsOn("npm_install")
+  dependsOn("npm_install", "webpack")
 }
 
 node {
