@@ -43,7 +43,7 @@ for (const entry in entries) {
   const htmlFileName = `src/main/resources/templates/${entry}.html`
   const htmlAlreadyExists = fs.existsSync(htmlFileName);
   if (htmlAlreadyExists) {
-    //continue;
+    continue;
   }
   console.log(`Creating HTML file for ${entry} at ${htmlFileName}`)
   fs.writeFileSync(htmlFileName, formattedHtmlString);
