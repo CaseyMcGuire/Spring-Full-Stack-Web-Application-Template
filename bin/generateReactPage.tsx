@@ -1,8 +1,9 @@
 
+// @ts-ignore
 import entries from '../entries.js';
 import * as React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import fs from 'fs';
+import {renderToStaticMarkup} from 'react-dom/server';
+
 
 
 function MyComponent() {
@@ -16,8 +17,8 @@ console.log(entries);
 
 for (const entry in entries) {
   console.log(entry)
-  const data = fs.readFileSync(entries[entry] + '.tsx', 'utf8');
-  console.log(data);
+  //const data = fs.readFileSync(entries[entry] + '.tsx', 'utf8');
+  //console.log(data);
 }
 
-console.log(ReactDOMServer.renderToStaticMarkup(<MyComponent />));
+console.log(renderToStaticMarkup(<MyComponent />));
