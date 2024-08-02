@@ -135,7 +135,7 @@ jooq {
           name = "org.jooq.codegen.KotlinGenerator"
           target.apply {
             packageName = "generated.jooq"
-            directory = "src/main/kotlin/com/kotlinspringgraphqlreact/db"
+            directory = "src/main/kotlin/com/kotlinspringgraphqlreact/db/codegen"
           }
           database.apply {
             // See https://www.postgresqltutorial.com/postgresql-administration/postgresql-schema/
