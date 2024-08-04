@@ -42,6 +42,8 @@ dependencies {
   // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core:9.16.0")
+
+  // this dependency fixes some dependency bug with DGS. It can probably be removed at some point.
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 }
 
