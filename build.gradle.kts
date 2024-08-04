@@ -4,6 +4,8 @@ import com.github.gradle.node.npm.task.NpxTask
 import com.github.gradle.node.task.NodeTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 
+val springVersion = "3.2.2"
+
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
   id("org.springframework.boot") version "3.2.2"
@@ -14,10 +16,10 @@ plugins {
   id("org.flywaydb.flyway") version "9.6.0"
   id("java")
 }
-
 dependencyManagement {
   imports {
     mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release")
+    mavenBom("org.springframework.boot:spring-boot-dependencies:${springVersion}")
   }
 }
 
@@ -32,25 +34,29 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
-  implementation("org.postgresql:postgresql:42.5.1")
-  jooqGenerator("org.postgresql:postgresql:42.5.1")
+  implementation("org.postgresql:postgresql:42.7.2")
+  jooqGenerator("org.postgresql:postgresql:42.7.2")
 
   // With these two dependencies, Spring will automatically run Flyway migrations on startup. See:
   // https://flywaydb.org/documentation/usage/plugins/springboot
   // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core:9.16.0")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 }
+
+// if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
+val javaVersion = "17"
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
-    jvmTarget = "17"
+    jvmTarget = javaVersion
   }
 }
 
 tasks.withType<JavaCompile> {
-  sourceCompatibility = "17"
-  targetCompatibility = "17"
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
 }
 
 tasks.register<NpmTask>("webpack") {
