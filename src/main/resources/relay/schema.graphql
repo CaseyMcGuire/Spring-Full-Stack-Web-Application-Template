@@ -1,0 +1,7 @@
+"""
+type Query {
+  baz: String
+  bar(baz: String!): String!
+  foo: String!
+}
+"""

@@ -6,13 +6,13 @@
   "scripts": {
     "webpack": "node_modules/webpack-cli/bin/cli.js --config webpack.production.js",
     "webpack-development": "node_modules/webpack-cli/bin/cli.js --config webpack.development.js",
-    "relay": "relay-compiler",
+    "relay": "babel-node -x .ts -- bin/generateRelay.ts",
     "generate-react-pages": "babel-node -x .tsx -- ./bin/generateReactPage.tsx"
   },
   "relay": {
     "src": "src/main/web-frontend",
     "language": "typescript",
-    "schema": "src/main/resources/schema/schema.graphql",
+    "schema": "src/main/resources/relay/schema.graphql",
     "artifactDirectory": "./src/main/web-frontend/__generated__"
   },
   "repository": {
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/CaseyMcGuire/puzzlr-kotlin#readme",
   "dependencies": {
     "@babel/runtime": "^7.17.9",
+    "graphql-tools": "^9.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-jss": "^10.0.4",
