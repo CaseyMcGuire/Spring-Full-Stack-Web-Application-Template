@@ -6,8 +6,7 @@
   "scripts": {
     "webpack": "node_modules/webpack-cli/bin/cli.js --config webpack.production.js",
     "webpack-development": "node_modules/webpack-cli/bin/cli.js --config webpack.development.js",
-    "relay": "babel-node -x .ts -- bin/generateRelay.ts",
-    "generate-react-pages": "babel-node -x .tsx -- ./bin/generateReactPage.tsx"
+    "relay-compiler": "babel-node -x .ts -- bin/generateSchemaAndRunRelayCompiler.ts"
   },
   "relay": {
     "src": "src/main/web-frontend",

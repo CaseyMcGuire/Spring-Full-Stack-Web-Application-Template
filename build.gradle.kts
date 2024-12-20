@@ -1,7 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.gradle.node.npm.task.NpmTask
-import com.github.gradle.node.npm.task.NpxTask
-import com.github.gradle.node.task.NodeTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 val springVersion = "3.2.2"
@@ -70,11 +68,7 @@ tasks.register<NpmTask>("webpackDevelopment") {
 }
 
 tasks.register<NpmTask>("buildRelay") {
-  npmCommand.set(listOf("run", "relay"))
-}
-
-tasks.register<NpmTask>("generateReactPages") {
-  npmCommand.set(listOf("run", "generate-react-pages"))
+  npmCommand.set(listOf("run", "relay-compiler"))
 }
 
 // make sure webpack runs before the processResources task so the TypeScript files are compiled before

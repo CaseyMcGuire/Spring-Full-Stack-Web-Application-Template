@@ -17,7 +17,6 @@ export default function FooBar(props: {murp: FooBar_murp$key}) {
   return (
     <div>
       <div>
-
         foo: {data.foo}
         murp: {data.murp}
       </div>
