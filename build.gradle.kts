@@ -3,6 +3,14 @@ import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 val springVersion = "3.2.2"
+val dgsVersion = "9.2.2"
+// if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
+val javaVersion = "17"
+val postgresVersion = "42.7.2"
+val flywayVersion = "9.16.0"
+val jooqVersion = "3.14.1"
+val myNodeVersion = "20.11.0"
+val myNpmVersion = "10.4.0"
 
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
@@ -14,9 +22,10 @@ plugins {
   id("org.flywaydb.flyway") version "9.6.0"
   id("java")
 }
+
 dependencyManagement {
   imports {
-    mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:9.2.2")
+    mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${dgsVersion}")
     mavenBom("org.springframework.boot:spring-boot-dependencies:${springVersion}")
   }
 }
@@ -32,21 +41,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
-  implementation("org.postgresql:postgresql:42.7.2")
-  jooqGenerator("org.postgresql:postgresql:42.7.2")
+  implementation("org.postgresql:postgresql:${postgresVersion}")
+  jooqGenerator("org.postgresql:postgresql:${postgresVersion}")
 
   // With these two dependencies, Spring will automatically run Flyway migrations on startup. See:
   // https://flywaydb.org/documentation/usage/plugins/springboot
   // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.flywaydb:flyway-core:9.16.0")
-
-  // this dependency fixes some dependency bug with DGS. It can probably be removed at some point.
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+  implementation("org.flywaydb:flyway-core:$flywayVersion")
 }
-
-// if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
-val javaVersion = "17"
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
@@ -77,9 +80,11 @@ tasks.processResources {
   dependsOn("npm_install", "webpack")
 }
 
+// Note the node and npm variables can't be named `nodeVersion` and `npmVersion` since it interferes with
+// the plugin
 node {
-  version.set("20.11.0")
-  npmVersion.set("10.4.0")
+  version.set(myNodeVersion)
+  npmVersion.set(myNpmVersion)
   download.set(true)
 }
 
@@ -122,7 +127,7 @@ flyway {
 }
 
 jooq {
-  version.set("3.14.1")
+  version.set(jooqVersion)
   configurations {
     create("main") {
       generateSchemaSourceOnCompilation.set(false)
