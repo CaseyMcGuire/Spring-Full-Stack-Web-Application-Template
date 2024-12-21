@@ -11,6 +11,7 @@ val flywayVersion = "9.16.0"
 val jooqVersion = "3.14.1"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
+val kotlinxHtmlVersion = "0.11.0"
 
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
@@ -39,10 +40,10 @@ repositories {
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
-  implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
   implementation("org.postgresql:postgresql:${postgresVersion}")
   jooqGenerator("org.postgresql:postgresql:${postgresVersion}")
+  implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
 
   // With these two dependencies, Spring will automatically run Flyway migrations on startup. See:
   // https://flywaydb.org/documentation/usage/plugins/springboot
