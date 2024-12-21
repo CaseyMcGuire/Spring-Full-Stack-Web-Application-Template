@@ -1,4 +1,5 @@
 import {Environment, Network, RecordSource, RequestParameters, Store, Variables} from "relay-runtime";
+import CsrfUtils from "../utils/CsrfUtils";
 
 export class RelayConfig {
   static getEnvironment(): Environment {
@@ -13,10 +14,13 @@ export class RelayConfig {
     operation: RequestParameters,
     variables: Variables
   ) {
+    const csrfToken = CsrfUtils.getToken();
+    const csrfHeader = CsrfUtils.getHeader();
     return fetch("/graphql", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        [csrfHeader]: csrfToken
       },
       body: JSON.stringify({
         query: operation.text,
