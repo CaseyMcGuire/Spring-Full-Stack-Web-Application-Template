@@ -1,9 +1,8 @@
-package com.kotlinspringgraphqlreact.controllers
+package com.application.controllers
 
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
 

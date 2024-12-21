@@ -1,4 +1,4 @@
-package com.kotlinspringgraphqlreact.graphql
+package com.application.graphql
 
 import com.netflix.graphql.dgs.*
 

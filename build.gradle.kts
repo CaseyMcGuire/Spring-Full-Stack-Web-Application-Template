@@ -13,6 +13,17 @@ val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.11.0"
 
+val pathToApplicationFolder = "src/main/kotlin/com"
+val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
+val applicationFolderName = applicationFolder.list().singleOrNull()
+  ?: throw IllegalStateException("This application assumes that the path to the application code is $pathToApplicationFolder " +
+      "with a single folder. However, it instead found the following files: ${applicationFolder.list()}. This assumption is " +
+      "needed because some libraries use codegen and we need to keep the paths we pass to these libraries to be consistent " +
+      "with the project structure.")
+
+val jooqCodegenPath = "src/main/kotlin/com/${applicationFolderName}/db/codegen"
+val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
+
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
   id("org.springframework.boot") version "3.2.2"
@@ -31,7 +42,7 @@ dependencyManagement {
   }
 }
 
-group = "com.kotlinspringgraphlreact"
+group = "com.application"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -92,7 +103,7 @@ node {
 tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
   schemaPaths = mutableListOf("${projectDir}/src/main/resources/schema")
   generateClient = true
-  packageName = "com.kotlinspringgraphqlreact.graphql"
+  packageName = dgsCodegenPackage
 }
 
 val getEnvironmentVariables = fun(): Map<String, String> {
@@ -143,7 +154,7 @@ jooq {
           name = "org.jooq.codegen.KotlinGenerator"
           target.apply {
             packageName = "generated.jooq"
-            directory = "src/main/kotlin/com/kotlinspringgraphqlreact/db/codegen"
+            directory = jooqCodegenPath
           }
           database.apply {
             // See https://www.postgresqltutorial.com/postgresql-administration/postgresql-schema/
