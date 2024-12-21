@@ -59,6 +59,7 @@ repositories {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+  implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.postgresql:postgresql:${postgresVersion}")
   jooqGenerator("org.postgresql:postgresql:${postgresVersion}")
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
