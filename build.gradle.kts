@@ -26,6 +26,13 @@ val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
 
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
+  // Kotlin makes all classes final by default but Spring relies
+  // upon classes being extendable to implement certain functionality.
+  // In my case, Spring Security's `@PreAuthorize` annotation wasn't working
+  // but when I marked the class as `open`, dependency injection wouldn't work.
+  // However, this plugin seems to fix both issues.
+  // Read here for more info: https://kotlinlang.org/docs/all-open-plugin.html
+  id("org.jetbrains.kotlin.plugin.spring") version "1.9.22"
   id("org.springframework.boot") version "3.2.2"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.github.node-gradle.node") version "7.0.2"
