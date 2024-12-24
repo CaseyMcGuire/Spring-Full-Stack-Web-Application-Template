@@ -1,2 +1,2 @@
-rootProject.name = "graphqlspringreactrelay"
+rootProject.name = "application"
 
