@@ -15,6 +15,12 @@ class MainController {
     return generateHtml("index")
   }
 
+  @GetMapping("/graphiql")
+  @ResponseBody
+  fun graphiql(): String {
+    return generateHtml("graphiql")
+  }
+
 
   private fun generateHtml(entryKey: String) = createHTML().html {
     lang = "en"
