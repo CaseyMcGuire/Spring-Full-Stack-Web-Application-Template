@@ -1,5 +1,6 @@
 const path = require('path');
 const entries = require("./entries");
+const StylexPlugin = require("@stylexjs/webpack-plugin");
 
 module.exports = {
   entry: {
@@ -41,6 +42,11 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new StylexPlugin({
+      filename: 'styles.css',
+    }),
+  ],
   externals: {
     'react': 'React',
     'react-dom': 'ReactDOM',

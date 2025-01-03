@@ -3,6 +3,7 @@
 This is a project template I use for creating new web applications. It uses the following technologies
 - [Kotlin](https://kotlinlang.org/) as the server-side language of choice
 - [Spring Boot](https://spring.io/projects/spring-boot) as the web application framework 
+- [kotlinx.html](https://github.com/kotlin/kotlinx.html) for server-side HTML rendering.
 - [Postgres](https://www.postgresql.org/) as the database
 - [Jooq](https://www.jooq.org/) for creating typesafe SQL queries.
 - [Flyway](https://flywaydb.org/) for handling database migrations.
@@ -10,7 +11,7 @@ This is a project template I use for creating new web applications. It uses the 
 - [TypeScript](https://www.typescriptlang.org/) as the client-side language of choice
 - [React](https://react.dev/) as the UI rendering library.
 - [Relay](https://relay.dev/) as the client-side data fetching API.
-- [React-JSS](https://cssinjs.org/react-jss/?v=v10.3.0) for client-side styling
+- [Stylex](https://stylexjs.com/docs/learn/) for client-side styling
 - [React Router](https://reactrouter.com/en/main) as the client-side routing framework
 
 ## Setup (for Mac)

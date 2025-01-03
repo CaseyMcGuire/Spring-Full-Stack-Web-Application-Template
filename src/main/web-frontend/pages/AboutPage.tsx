@@ -1,14 +1,14 @@
 import * as React from "react";
-import {createUseStyles} from "react-jss";
+import * as stylex from '@stylexjs/stylex';
 
-const useStyles = createUseStyles({
+
+const styles = stylex.create({
   body: {
     color: 'green'
   }
 })
 export default function AboutPage() {
-  const styles = useStyles();
   return (
-    <div className={styles.body}>About</div>
+    <div {...styles.body}>About</div>
   )
 }
