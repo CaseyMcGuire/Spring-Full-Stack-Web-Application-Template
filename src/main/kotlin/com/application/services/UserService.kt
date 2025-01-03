@@ -1,6 +1,6 @@
-package com.kotlinspringgraphqlreact.services
+package com.application.services
 
-import com.kotlinspringgraphqlreact.dao.UserDao
+import com.application.dao.UserDao
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 

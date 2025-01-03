@@ -1,6 +1,6 @@
-package com.kotlinspringgraphqlreact.db.models
+package com.application.db.models
 
-import com.kotlinspringgraphqlreact.services.User
+import com.application.services.User
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

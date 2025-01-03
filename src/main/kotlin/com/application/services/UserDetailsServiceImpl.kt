@@ -1,7 +1,7 @@
-package com.kotlinspringgraphqlreact.services
+package com.application.services
 
-import com.kotlinspringgraphqlreact.dao.UserDao
-import com.kotlinspringgraphqlreact.db.models.UserDetailsImpl
+import com.application.dao.UserDao
+import com.application.db.models.UserDetailsImpl
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

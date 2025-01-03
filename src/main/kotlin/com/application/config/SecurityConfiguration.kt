@@ -1,6 +1,6 @@
-package com.kotlinspringgraphqlreact.config
+package com.application.config
 
-import com.kotlinspringgraphqlreact.services.UserDetailsServiceImpl
+import com.application.services.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

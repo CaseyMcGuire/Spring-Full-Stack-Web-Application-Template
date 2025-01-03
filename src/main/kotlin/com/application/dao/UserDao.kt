@@ -1,6 +1,6 @@
-package com.kotlinspringgraphqlreact.dao
+package com.application.dao
 
-import com.kotlinspringgraphqlreact.services.User
+import com.application.services.User
 import org.springframework.stereotype.Component
 
 @Component
