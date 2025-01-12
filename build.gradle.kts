@@ -8,7 +8,7 @@ val dgsVersion = "9.2.2"
 val javaVersion = "17"
 val postgresVersion = "42.7.2"
 val flywayVersion = "9.16.0"
-val jooqVersion = "3.14.1"
+val jooqVersion = "3.19.16"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.11.0"
@@ -16,10 +16,12 @@ val kotlinxHtmlVersion = "0.11.0"
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
 val applicationFolderName = applicationFolder.list().singleOrNull()
-  ?: throw IllegalStateException("This application assumes that the path to the application code is $pathToApplicationFolder " +
-      "with a single folder. However, it instead found the following files: ${applicationFolder.list()}. This assumption is " +
-      "needed because some libraries use codegen and we need to keep the paths we pass to these libraries to be consistent " +
-      "with the project structure.")
+  ?: throw IllegalStateException(
+    "This application assumes that the path to the application code is $pathToApplicationFolder " +
+        "with a single folder. However, it instead found the following files: ${applicationFolder.list()}. This assumption is " +
+        "needed because some libraries use codegen and we need to keep the paths we pass to these libraries to be consistent " +
+        "with the project structure."
+  )
 
 val jooqCodegenPath = "src/main/kotlin/com/${applicationFolderName}/db/codegen"
 val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
@@ -37,7 +39,7 @@ plugins {
   id("io.spring.dependency-management") version "1.1.0"
   id("com.github.node-gradle.node") version "7.0.2"
   id("com.netflix.dgs.codegen") version "5.2.4"
-  id("nu.studer.jooq") version "8.0"
+  id("org.jooq.jooq-codegen-gradle") version "3.19.16"
   id("org.flywaydb.flyway") version "9.6.0"
   id("java")
 }
@@ -61,8 +63,20 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
   implementation("org.springframework.boot:spring-boot-starter-security")
+
+  // for application runtime
+  implementation("org.jooq:jooq:$jooqVersion")
+  implementation("org.jooq:jooq-meta:$jooqVersion")
+  implementation("org.jooq:jooq-codegen:$jooqVersion")
+
+  // This ensures these libraries will be on the classpath for the jooqCodegen gradle task
+  jooqCodegen("org.jooq:jooq-codegen:$jooqVersion")
+  jooqCodegen("org.jooq:jooq-meta:$jooqVersion")
+  jooqCodegen("org.postgresql:postgresql:$postgresVersion")
+  jooqCodegen(project(":customgenerator"))
+
   implementation("org.postgresql:postgresql:${postgresVersion}")
-  jooqGenerator("org.postgresql:postgresql:${postgresVersion}")
+
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
 
   // With these two dependencies, Spring will automatically run Flyway migrations on startup. See:
@@ -148,35 +162,34 @@ flyway {
 }
 
 jooq {
-  version.set(jooqVersion)
-  configurations {
-    create("main") {
-      generateSchemaSourceOnCompilation.set(false)
-      jooqConfiguration.apply {
-        jdbc.apply {
-          driver = "org.postgresql.Driver"
-          url = dbUrl
-          user = dbUser
-          password = dbPassword
-        }
-        generator.apply {
-          name = "org.jooq.codegen.KotlinGenerator"
-          target.apply {
-            packageName = "generated.jooq"
-            directory = jooqCodegenPath
-          }
-          database.apply {
-            // See https://www.postgresqltutorial.com/postgresql-administration/postgresql-schema/
-            // for more explanation about the difference between databases and schemas in Postgres
-            inputSchema = "public"
-            excludes = "flyway_schema_history"
-          }
-          generate.apply {
-            isImmutablePojos = true
-          }
-        }
+  configuration {
+    jdbc {
+      driver = "org.postgresql.Driver"
+      url = dbUrl
+      user = dbUser
+      password = dbPassword
+    }
+    generator {
+      name = "org.jooq.codegen.KotlinGenerator"
+      target {
+        packageName = "generated.jooq"
+        directory = jooqCodegenPath
+      }
+      database {
+        // See https://www.postgresqltutorial.com/postgresql-administration/postgresql-schema/
+        // for more explanation about the difference between databases and schemas in Postgres
+        inputSchema = "public"
+        excludes = "flyway_schema_history"
+      }
+      generate {
+        isImmutablePojos = true
+      }
+      strategy {
+        // Note: In order for this to work, this class must be in a different gradle project and the gradle project
+        // must be included as a dependency of the jooqCodegen gradle task (see above in 'dependencies' block).
+        // See https://github.com/etiennestuder/gradle-jooq-plugin/blob/ac7f25ada8c8a15b0e3692ef038f6dd0fd6a42ac/example/configure_custom_generator_strategy/build.gradle#L12
+        name = "com.application.CustomGeneratorStrategy"
       }
     }
-
   }
 }
