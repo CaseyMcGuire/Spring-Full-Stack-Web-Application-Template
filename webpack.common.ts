@@ -1,10 +1,13 @@
-const path = require('path');
-const entries = require("./entries");
-const StylexPlugin = require("@stylexjs/webpack-plugin");
+import path from "path";
 
-module.exports = {
+//@ts-ignore
+import StylexPlugin from "@stylexjs/webpack-plugin";
+import { Configuration } from "webpack";
+
+const config : Configuration = {
   entry: {
-    ...entries
+    index : './src/main/web-frontend/App',
+    graphiql: '/src/main/web-frontend/pages/GraphiqlPage'
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
@@ -19,7 +22,8 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'src/main/resources/static/bundles')
+    path: path.resolve(__dirname, 'src/main/resources/static/bundles'),
+    module: true, // Output your bundle as an actual ES module
   },
   module: {
     rules: [
@@ -30,7 +34,7 @@ module.exports = {
           // then run it through babel (to, for example, convert our graphql queries)
           {loader: 'babel-loader'},
           // first compile our typescript into javascript
-          {loader: 'ts-loader',},
+          {loader: 'ts-loader'},
         ]
       },
 
@@ -38,7 +42,11 @@ module.exports = {
       {
         enforce: "pre",
         test: /\.js$/,
-        loader: "source-map-loader"
+        loader: "source-map-loader",
+        exclude: [
+          // this module is emitting warnings when running webpack. Just ignore for now.
+          path.resolve(__dirname, 'node_modules/entities')
+        ]
       },
       {
         test: /\.css$/i,
@@ -51,8 +59,14 @@ module.exports = {
       filename: 'styles.css',
     }),
   ],
-  externals: {
-    'react': 'React',
-    'react-dom': 'ReactDOM',
+  externalsType: "module",
+  externals: [
+    //'react',
+    //'react-dom',
+  ],
+  experiments: {
+    outputModule: true,
   },
 };
+
+export default config;

@@ -1,10 +1,10 @@
 
 import {createGraphiQLFetcher} from "@graphiql/toolkit";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import {GraphiQL} from "graphiql";
 import 'graphiql/graphiql.css';
 import CsrfUtils from "../utils/CsrfUtils";
+import {renderComponent} from "../utils/ReactPageUtils";
 
 function GraphiQLPage() {
   const fetcher = createGraphiQLFetcher({
@@ -24,7 +24,7 @@ function getHeaders(): string {
     2
   )
 }
-ReactDOM.render(
-  <GraphiQLPage />,
-  document.getElementById("root")
+
+renderComponent(
+  <GraphiQLPage />
 );

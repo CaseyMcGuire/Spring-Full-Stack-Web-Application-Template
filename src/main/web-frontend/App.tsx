@@ -1,14 +1,14 @@
 import * as React from "react";
 import {graphql} from "react-relay";
-import {RelayConfig} from "relay/RelayConfig";
-import {AppQuery} from "__generated__/AppQuery.graphql";
+import {RelayConfig} from "./relay/RelayConfig";
+import {AppQuery} from "./__generated__/AppQuery.graphql";
 import {
   Routes,
   Route,
   Link,
   BrowserRouter
 } from "react-router-dom";
-import HomePage from "pages/HomePage";
+import HomePage from "./pages/HomePage";
 import {useLazyLoadQuery} from "react-relay/hooks";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
 import {createRoot} from "react-dom/client";
