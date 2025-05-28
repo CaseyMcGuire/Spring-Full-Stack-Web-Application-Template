@@ -59,8 +59,8 @@ const config : Configuration = {
   ],
   externalsType: "module",
   externals: [
-    //'react',
-    //'react-dom',
+    'react',
+    'react-dom',
   ],
   experiments: {
     outputModule: true,
