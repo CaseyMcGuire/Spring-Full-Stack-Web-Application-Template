@@ -12,6 +12,7 @@ val jooqVersion = "3.19.16"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.11.0"
+val exposedVersion = "1.0.0-beta-2"
 
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
@@ -25,6 +26,7 @@ val applicationFolderName = applicationFolder.list().singleOrNull()
 
 val jooqCodegenPath = "src/main/kotlin/com/${applicationFolderName}/db/codegen"
 val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
+val migrationScriptPath = "com.application.db.GenerateMigrationScriptKt"
 
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.9.22"
@@ -76,6 +78,10 @@ dependencies {
   jooqCodegen(project(":customgenerator"))
 
   implementation("org.postgresql:postgresql:${postgresVersion}")
+  implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+  implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+  implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
+  implementation("org.jetbrains.exposed:exposed-migration:$exposedVersion")
 
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
 
@@ -112,7 +118,11 @@ tasks.register<NpmTask>("buildRelay") {
 // make sure webpack runs before the processResources task so the TypeScript files are compiled before
 // being copied into the build folder
 tasks.processResources {
-  dependsOn("npm_install", "webpack")
+  val taskNames = gradle.startParameter.taskNames
+  // only run frontend tasks when we're doing a full build
+  if (taskNames.any { it.contains("bootRun", ignoreCase = true) }) {
+    dependsOn("npm_install", "webpack")
+  }
 }
 
 // Note the node and npm variables can't be named `nodeVersion` and `npmVersion` since it interferes with
@@ -146,11 +156,20 @@ val envVariables: Map<String, String> = getEnvironmentVariables()
 
 val dbUser = envVariables.getValue("DB_USER")
 val dbPassword = envVariables.getValue("DB_PASSWORD")
-val dbUrl = envVariables.getValue("DB_URL")
+val dbUrl = envVariables.getValue("DB_URL_PREFIX") + envVariables.getValue("DB_NAME")
 
 tasks.getByName<BootRun>("bootRun") {
   // This makes the environment variables specified in the .env file accessible to the application
   environment = envVariables
+  mainClass.set("com.application.MainKt")
+}
+
+tasks.register<JavaExec>("generateMigrationScript") {
+  description = "Generates a SQL migration script which can be used by Flyway."
+  // This tells Gradle to use the project's compiled classes and all its dependencies
+  classpath = sourceSets.main.get().runtimeClasspath
+  environment = envVariables
+  mainClass.set(migrationScriptPath)
 }
 
 // Spring automatically handles flyway migrations but adding this task allows running flyway tasks
