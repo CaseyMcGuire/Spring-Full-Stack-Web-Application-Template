@@ -7,7 +7,7 @@ val dgsVersion = "9.2.2"
 // if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
 val javaVersion = "17"
 val postgresVersion = "42.7.2"
-val flywayVersion = "9.16.0"
+val flywayVersion = "11.8.2"
 val jooqVersion = "3.19.16"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
@@ -16,7 +16,7 @@ val exposedVersion = "1.0.0-beta-2"
 
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
-val applicationFolderName = applicationFolder.list().singleOrNull()
+val applicationFolderName = applicationFolder.list()?.singleOrNull()
   ?: throw IllegalStateException(
     "This application assumes that the path to the application code is $pathToApplicationFolder " +
         "with a single folder. However, it instead found the following files: ${applicationFolder.list()}. This assumption is " +
@@ -82,6 +82,7 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
   implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
   implementation("org.jetbrains.exposed:exposed-migration:$exposedVersion")
+  implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
 
@@ -90,6 +91,7 @@ dependencies {
   // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core:$flywayVersion")
+  implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 }
 
 tasks.withType<KotlinCompile> {

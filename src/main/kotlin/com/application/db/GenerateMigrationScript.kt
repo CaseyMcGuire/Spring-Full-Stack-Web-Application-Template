@@ -1,6 +1,7 @@
 package com.application.db
 
-import com.application.db.tables.Users
+import com.application.db.tables.PostsTable
+import com.application.db.tables.UsersTable
 import org.jetbrains.exposed.v1.core.ExperimentalDatabaseMigrationApi
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -28,7 +29,8 @@ fun generateSingleScript() {
   // scriptDirectory = "src/main/resources/db/migration",
   val statements = transaction {
     MigrationUtils.statementsRequiredForDatabaseMigration(
-      Users
+      UsersTable,
+      PostsTable
     )
   }
 
@@ -36,6 +38,7 @@ fun generateSingleScript() {
   statements.forEach {
     println(it)
   }
+  println("================================")
 }
 
 fun main(args: Array<String>) {
