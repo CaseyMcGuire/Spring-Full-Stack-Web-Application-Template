@@ -2,7 +2,9 @@ package com.application.db
 
 import com.application.db.tables.PostsTable
 import com.application.db.tables.UsersTable
+import io.github.classgraph.ClassGraph
 import org.jetbrains.exposed.v1.core.ExperimentalDatabaseMigrationApi
+import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.MigrationUtils
@@ -26,12 +28,22 @@ fun generateSingleScript() {
     password = databasePassword
   )
 
-  // scriptDirectory = "src/main/resources/db/migration",
+  val tableObjects = ClassGraph()
+    .enableAllInfo()
+    .acceptPackages("com.application.db.tables")
+    .scan()
+    .getSubclasses(Table::class.java.name)
+    .loadClasses(Table::class.java)
+    .mapNotNull { it.kotlin.objectInstance }
+    .toTypedArray()
+
   val statements = transaction {
-    MigrationUtils.statementsRequiredForDatabaseMigration(
-      UsersTable,
-      PostsTable
-    )
+    MigrationUtils.statementsRequiredForDatabaseMigration(*tableObjects)
+  }
+
+  if (statements.isEmpty()) {
+    println("Nothing to migrate.")
+    return
   }
 
   println("Database migration statements: ")

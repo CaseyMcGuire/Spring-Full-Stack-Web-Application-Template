@@ -92,6 +92,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core:$flywayVersion")
   implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+
+  implementation("io.github.classgraph:classgraph:4.8.179")
 }
 
 tasks.withType<KotlinCompile> {
