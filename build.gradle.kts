@@ -1,18 +1,19 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val springVersion = "3.2.2"
-val dgsVersion = "9.2.2"
+val springVersion = "3.5.5"
+val dgsVersion = "10.4.0"
 // if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
-val javaVersion = "17"
-val postgresVersion = "42.7.2"
-val flywayVersion = "11.8.2"
-val jooqVersion = "3.19.16"
+val javaVersion = 21
+val postgresVersion = "42.7.8"
+val flywayVersion = "11.16.0" // Matched to the plugin version in target file
+val jooqVersion = "3.20.8"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
-val kotlinxHtmlVersion = "0.11.0"
-val exposedVersion = "1.0.0-beta-2"
+val kotlinxHtmlVersion = "0.12.0"
+val exposedVersion = "1.0.0-rc-3"
 
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
@@ -29,20 +30,16 @@ val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
 val migrationScriptPath = "com.application.db.GenerateMigrationScriptKt"
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.9.22"
+  id("org.jetbrains.kotlin.jvm") version "2.2.21"
   // Kotlin makes all classes final by default but Spring relies
   // upon classes being extendable to implement certain functionality.
-  // In my case, Spring Security's `@PreAuthorize` annotation wasn't working
-  // but when I marked the class as `open`, dependency injection wouldn't work.
-  // However, this plugin seems to fix both issues.
-  // Read here for more info: https://kotlinlang.org/docs/all-open-plugin.html
-  id("org.jetbrains.kotlin.plugin.spring") version "1.9.22"
-  id("org.springframework.boot") version "3.2.2"
-  id("io.spring.dependency-management") version "1.1.0"
-  id("com.github.node-gradle.node") version "7.0.2"
-  id("com.netflix.dgs.codegen") version "5.2.4"
-  id("org.jooq.jooq-codegen-gradle") version "3.19.16"
-  id("org.flywaydb.flyway") version "9.6.0"
+  id("org.jetbrains.kotlin.plugin.spring") version "2.2.21"
+  id("org.springframework.boot") version "3.5.5"
+  id("io.spring.dependency-management") version "1.1.7"
+  id("com.github.node-gradle.node") version "7.1.0"
+  id("com.netflix.dgs.codegen") version "8.1.1"
+  id("org.jooq.jooq-codegen-gradle") version "3.20.8"
+  id("org.flywaydb.flyway") version "11.16.0"
   id("java")
 }
 
@@ -63,7 +60,8 @@ repositories {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-  implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+  // Name changed in newer versions from graphql-dgs-spring-boot-starter to dgs-starter
+  implementation("com.netflix.graphql.dgs:dgs-starter")
   implementation("org.springframework.boot:spring-boot-starter-security")
 
   // for application runtime
@@ -81,30 +79,39 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
   implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
   implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
-  implementation("org.jetbrains.exposed:exposed-migration:$exposedVersion")
+
+  // Exposed migration split into core and jdbc in newer versions
+  implementation("org.jetbrains.exposed:exposed-migration-core:$exposedVersion")
+  implementation("org.jetbrains.exposed:exposed-migration-jdbc:$exposedVersion")
+
   implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  // With these two dependencies, Spring will automatically run Flyway migrations on startup. See:
-  // https://flywaydb.org/documentation/usage/plugins/springboot
-  // https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
+  // With these two dependencies, Spring will automatically run Flyway migrations on startup.
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core:$flywayVersion")
   implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
-  implementation("io.github.classgraph:classgraph:4.8.179")
+  implementation("io.github.classgraph:classgraph:4.8.184")
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    jvmTarget = javaVersion
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(javaVersion))
   }
 }
 
-tasks.withType<JavaCompile> {
-  sourceCompatibility = javaVersion
-  targetCompatibility = javaVersion
+kotlin {
+  jvmToolchain(javaVersion)
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_21)
+  }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  options.release.set(javaVersion)
 }
 
 tasks.register<NpmTask>("webpack") {
