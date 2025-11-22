@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.ResponseBody
 @Controller
 class MainController {
 
-  @GetMapping("/")
+  @GetMapping(value = [
+  "/",
+  "/about",
+  "/login",
+  "/register"
+  ])
   @ResponseBody
   fun home(): String {
     return ReactPage("index", "Home").render()

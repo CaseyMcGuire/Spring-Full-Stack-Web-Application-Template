@@ -1,6 +1,7 @@
 package com.application.services
 
 import com.application.dao.UserDao
+import com.application.exceptions.UserAlreadyExistsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -11,15 +12,15 @@ class UserService(
 ) {
 
   fun getUserByUsername(email: String): User? {
-    return userDao.findByUsername(email)
+    return userDao.findByEmail(email)
   }
 
-  fun registerUser(username: String, password: String) {
-    val existingUser = userDao.findByUsername(username)
+  fun createUser(email: String, password: String): User {
+    val existingUser = userDao.findByEmail(email)
     if (existingUser != null) {
-      throw IllegalArgumentException("A user with that username already exists")
+      throw UserAlreadyExistsException("A user with that username already exists")
     }
     val hashedPassword = passwordEncoder.encode(password)
-    userDao.createUser(username, hashedPassword)
+    return userDao.createUser(email, hashedPassword)
   }
 }

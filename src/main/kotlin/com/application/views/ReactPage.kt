@@ -45,7 +45,7 @@ class ReactPage(
         }
         link {
           rel = "stylesheet"
-          href = "/bundles/styles.css"
+          href = "/bundles/$bundleName.stylex.css"
         }
         script(type = "importmap") {
           unsafe {
