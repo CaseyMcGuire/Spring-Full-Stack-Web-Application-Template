@@ -24,6 +24,7 @@ const config : Configuration = {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'src/main/resources/static/bundles'),
     module: true, // Output your bundle as an actual ES module
+    publicPath: '/bundles/'
   },
   module: {
     rules: [
@@ -44,13 +45,16 @@ const config : Configuration = {
         test: /\.js$/,
         loader: "source-map-loader",
         exclude: [
-          // this module is emitting warnings when running webpack. Just ignore for now.
-          path.resolve(__dirname, 'node_modules/entities')
+          // these modules is emitting warnings when running webpack. Just ignore for now.
+          path.resolve(__dirname, 'node_modules/entities'),
+          path.resolve(__dirname, 'node_modules/monaco-graphql'),
+          path.resolve(__dirname, 'node_modules/monaco-editor')
         ]
       },
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
+        sideEffects: true,
       },
     ]
   },

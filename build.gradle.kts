@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -60,9 +59,9 @@ repositories {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-  // Name changed in newer versions from graphql-dgs-spring-boot-starter to dgs-starter
-  implementation("com.netflix.graphql.dgs:dgs-starter")
   implementation("org.springframework.boot:spring-boot-starter-security")
+
+  implementation("com.netflix.graphql.dgs:dgs-starter")
 
   // for application runtime
   implementation("org.jooq:jooq:$jooqVersion")
@@ -80,7 +79,6 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
   implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
 
-  // Exposed migration split into core and jdbc in newer versions
   implementation("org.jetbrains.exposed:exposed-migration-core:$exposedVersion")
   implementation("org.jetbrains.exposed:exposed-migration-jdbc:$exposedVersion")
 

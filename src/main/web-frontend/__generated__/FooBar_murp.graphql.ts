@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bceb93d7ba316f9ab44aa3dac81f13b2>>
+ * @generated SignedSource<<1dc6f03f6d7ddb004c7c13d1e280c0fc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type FooBar_murp$data = {
   readonly foo: string;

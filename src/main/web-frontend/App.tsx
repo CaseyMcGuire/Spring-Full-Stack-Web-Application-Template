@@ -2,7 +2,7 @@ import * as React from "react";
 import {RelayConfig} from "./relay/RelayConfig";
 import {
   createBrowserRouter, RouterProvider
-} from "react-router-dom";
+} from "react-router";
 import HomePage from "pages/HomePage";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
 import AboutPage from "./pages/AboutPage";

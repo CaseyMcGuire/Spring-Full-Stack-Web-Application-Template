@@ -1,27 +1,20 @@
-
-import {createGraphiQLFetcher} from "@graphiql/toolkit";
-import * as React from "react";
-import {GraphiQL} from "graphiql";
-import 'graphiql/graphiql.css';
-import CsrfUtils from "../utils/CsrfUtils";
-import {renderComponent} from "../utils/ReactPageUtils";
+import 'graphiql/setup-workers/webpack';
+import { createGraphiQLFetcher } from '@graphiql/toolkit';
+import * as React from 'react';
+import { GraphiQL } from 'graphiql';
+import { renderComponent } from 'utils/ReactPageUtils';
+import 'graphiql/style.css';
+import CsrfUtils from "utils/CsrfUtils";
 
 function GraphiQLPage() {
   const fetcher = createGraphiQLFetcher({
     url: window.location.origin + '/graphql',
+    headers: {
+      'X-XSRF-TOKEN': CsrfUtils.getToken(),
+    },
   });
   return (
-    <GraphiQL headers={getHeaders()} fetcher={fetcher} />
-  )
-}
-function getHeaders(): string {
-  const csrfToken = CsrfUtils.getToken();
-  return JSON.stringify(
-    {
-      'X-XSRF-TOKEN': csrfToken
-    },
-    null,
-    2
+    <GraphiQL fetcher={fetcher} />
   )
 }
 
