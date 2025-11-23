@@ -43,10 +43,6 @@ class ReactPage(
           name = "viewport"
           content = "initial-scale=1.0, maximum-scale=1.0, width=device-width"
         }
-        link {
-          rel = "stylesheet"
-          href = "/bundles/$bundleName.stylex.css"
-        }
         script(type = "importmap") {
           unsafe {
             raw(

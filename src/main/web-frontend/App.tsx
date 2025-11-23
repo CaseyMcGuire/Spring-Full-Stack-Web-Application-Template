@@ -10,6 +10,7 @@ import BlogPage from "./pages/BlogPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import {renderComponent} from "./utils/ReactPageUtils";
+import './styles.css';
 
 const router = createBrowserRouter([
   {

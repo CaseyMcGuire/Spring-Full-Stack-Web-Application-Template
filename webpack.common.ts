@@ -1,7 +1,5 @@
 import path from "path";
 
-//@ts-ignore
-import StylexPlugin from "@caseyjaymcguire/stylex-webpack-plugin";
 import { Configuration } from "webpack";
 
 const config : Configuration = {
@@ -45,7 +43,7 @@ const config : Configuration = {
         test: /\.js$/,
         loader: "source-map-loader",
         exclude: [
-          // these modules is emitting warnings when running webpack. Just ignore for now.
+          // these modules are emitting warnings when running webpack. Just ignore for now.
           path.resolve(__dirname, 'node_modules/entities'),
           path.resolve(__dirname, 'node_modules/monaco-graphql'),
           path.resolve(__dirname, 'node_modules/monaco-editor')
@@ -53,14 +51,11 @@ const config : Configuration = {
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
         sideEffects: true,
       },
     ]
   },
-  plugins: [
-    new StylexPlugin(),
-  ],
   externalsType: "module",
   externals: [
     'react',
