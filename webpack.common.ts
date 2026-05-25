@@ -1,6 +1,8 @@
 import path from "path";
 
 import { Configuration } from "webpack";
+import stylexPlugin from "@stylexjs/unplugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 const config : Configuration = {
   entry: {
@@ -8,58 +10,60 @@ const config : Configuration = {
     graphiql: '/src/main/web-frontend/pages/GraphiqlPage'
   },
   resolve: {
-    // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: [".ts", ".tsx", ".js", ".json"],
     modules: [
-      // in order to use absolute paths, set the root folders.
-      // In order for typescript to also compile, the project root must match the
-      // 'base_url' field in tsconfig. In this case, this is './src/main/web-frontend'
       path.resolve('./src/main/web-frontend'),
       path.resolve('./node_modules')
     ]
   },
+  devtool: 'eval-source-map',
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'src/main/resources/static/bundles'),
-    module: true, // Output your bundle as an actual ES module
-    publicPath: '/bundles/'
+    publicPath: '/bundles/',
+    module: true,
   },
   module: {
     rules: [
-      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
       {
         test: /\.tsx?$/,
-        use: [
-          // then run it through babel (to, for example, convert our graphql queries)
-          {loader: 'babel-loader'},
-          // first compile our typescript into javascript
-          {loader: 'ts-loader'},
-        ]
+        use: [{loader: 'babel-loader'}]
       },
-
-      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
         enforce: "pre",
         test: /\.js$/,
         loader: "source-map-loader",
         exclude: [
-          // these modules are emitting warnings when running webpack. Just ignore for now.
-          path.resolve(__dirname, 'node_modules/entities'),
-          path.resolve(__dirname, 'node_modules/monaco-graphql'),
-          path.resolve(__dirname, 'node_modules/monaco-editor')
-        ]
+          /node_modules\/monaco-editor/,
+          /node_modules\/monaco-graphql/,
+        ],
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
         sideEffects: true,
       },
     ]
   },
+  plugins: [
+    stylexPlugin.webpack({
+      useCSSLayers: true,
+      treeshakeCompensation: true,
+      aliases: {
+        "*": path.resolve("./src/main/web-frontend/*"),
+      },
+      cssInjectionTarget: (fileName: string) => fileName === 'stylex.css',
+    }),
+    new MiniCssExtractPlugin()
+  ],
   externalsType: "module",
   externals: [
+    'sanitize-html',
     'react',
     'react-dom',
+    "react-dom/client",
+    "react/jsx-runtime",
+    'highlight.js'
   ],
   experiments: {
     outputModule: true,
