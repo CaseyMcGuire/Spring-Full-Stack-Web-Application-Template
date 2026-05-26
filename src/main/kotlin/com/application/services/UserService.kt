@@ -21,6 +21,7 @@ class UserService(
       throw UserAlreadyExistsException("A user with that username already exists")
     }
     val hashedPassword = passwordEncoder.encode(password)
+      ?: throw IllegalStateException("Password encoder returned null")
     return userDao.createUser(email, hashedPassword)
   }
 }

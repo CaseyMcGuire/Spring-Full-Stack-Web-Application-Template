@@ -11,16 +11,12 @@ import org.springframework.stereotype.Service
 class UserDetailsServiceImpl(private val userDao: UserDao): UserDetailsService {
 
   @Throws(UsernameNotFoundException::class)
-  override fun loadUserByUsername(email: String?): UserDetails {
-    val exception = UsernameNotFoundException("User with given email not found")
-    if (email == null) {
-      throw exception
-    }
+  override fun loadUserByUsername(email: String): UserDetails {
     val user = userDao.findByEmail(email)
     if (user != null) {
       return UserDetailsImpl(user)
     }
-    throw exception
+    throw UsernameNotFoundException("User with given email not found")
   }
 
 }

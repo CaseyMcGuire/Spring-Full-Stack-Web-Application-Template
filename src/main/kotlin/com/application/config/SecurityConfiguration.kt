@@ -36,15 +36,11 @@ open class SecurityConfiguration(private val userDetailsService: UserDetailsServ
   @Bean
   open fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
-    // Spring Security 6 introduced new behavior around CSRF tokens. This was preventing
-    // me from logging in so I added the below code to opt out of the new default. It might
-    // be worth revisiting at some point because I didn't spend the time to figure out how to
-    // make it work
-    // https://docs.spring.io/spring-security/reference/5.8/migration/servlet/exploits.html#_i_need_to_opt_out_of_deferred_tokens_for_another_reason
+    // Use the plain CsrfTokenRequestAttributeHandler (not the default XOR-based one)
+    // to produce a stable CSRF token compatible with the SPA frontend.
     val requestHandler = CsrfTokenRequestAttributeHandler()
-    requestHandler.setCsrfRequestAttributeName(null)
     http {
-      authorizeRequests {
+      authorizeHttpRequests {
         authorize("/**", permitAll)
       }
       formLogin {

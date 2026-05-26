@@ -2,17 +2,17 @@ import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val springVersion = "3.5.5"
-val dgsVersion = "10.4.0"
+val springVersion = "4.0.6"
+val dgsVersion = "12.0.0"
 // if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
 val javaVersion = 21
-val postgresVersion = "42.7.8"
-val flywayVersion = "11.16.0" // Matched to the plugin version in target file
-val jooqVersion = "3.20.8"
+val postgresVersion = "42.7.11"
+val flywayVersion = "12.6.2" // Matched to the plugin version in target file
+val jooqVersion = "3.21.4"
 val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.12.0"
-val exposedVersion = "1.0.0-rc-3"
+val exposedVersion = "1.3.0"
 
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
@@ -29,16 +29,16 @@ val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
 val migrationScriptPath = "com.application.db.GenerateMigrationScriptKt"
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "2.2.21"
+  id("org.jetbrains.kotlin.jvm") version "2.3.21"
   // Kotlin makes all classes final by default but Spring relies
   // upon classes being extendable to implement certain functionality.
-  id("org.jetbrains.kotlin.plugin.spring") version "2.2.21"
-  id("org.springframework.boot") version "3.5.5"
+  id("org.jetbrains.kotlin.plugin.spring") version "2.3.21"
+  id("org.springframework.boot") version "4.0.6"
   id("io.spring.dependency-management") version "1.1.7"
   id("com.github.node-gradle.node") version "7.1.0"
-  id("com.netflix.dgs.codegen") version "8.1.1"
-  id("org.jooq.jooq-codegen-gradle") version "3.20.8"
-  id("org.flywaydb.flyway") version "11.16.0"
+  id("com.netflix.dgs.codegen") version "8.5.0"
+  id("org.jooq.jooq-codegen-gradle") version "3.21.4"
+  id("org.flywaydb.flyway") version "12.6.2"
   id("java")
 }
 
@@ -51,6 +51,10 @@ dependencyManagement {
 
 group = "com.application"
 version = "1.0-SNAPSHOT"
+
+springBoot {
+  mainClass.set("com.application.MainKt")
+}
 
 repositories {
   mavenCentral()
