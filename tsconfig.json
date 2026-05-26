@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "alwaysStrict": true,
     "baseUrl": "src/main/web-frontend",
+    "ignoreDeprecations": "6.0",
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
@@ -11,6 +13,8 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "allowJs": false,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["node"]
   }
 }

@@ -9,8 +9,11 @@ class ReactPage(
 ) : RenderablePage {
 
   companion object {
-    val REACT_INPUT = ImportMapInput("react", "https://esm.sh/react@18.3.1")
-    val REACT_DOM_INPUT = ImportMapInput("react-dom", "https://esm.sh/react-dom@18.3.1")
+    private const val REACT_VERSION = "19.2.6"
+    val REACT_INPUT = ImportMapInput("react", "https://esm.sh/react@$REACT_VERSION")
+    val REACT_SUBPATH_INPUT = ImportMapInput("react/", "https://esm.sh/react@$REACT_VERSION/")
+    val REACT_DOM_INPUT = ImportMapInput("react-dom", "https://esm.sh/react-dom@$REACT_VERSION")
+    val REACT_DOM_SUBPATH_INPUT = ImportMapInput("react-dom/", "https://esm.sh/react-dom@$REACT_VERSION/")
   }
 
   private var customHead: (HEAD.() -> Unit)? = null
@@ -52,7 +55,9 @@ class ReactPage(
                 ${
                 listOf(
                   REACT_INPUT,
+                  REACT_SUBPATH_INPUT,
                   REACT_DOM_INPUT,
+                  REACT_DOM_SUBPATH_INPUT,
                   *importMapInputs.toTypedArray()
                 ).joinToString(",\n") { "\"${it.name}\" : \"${it.pathOrUrl}\"" }
               }
