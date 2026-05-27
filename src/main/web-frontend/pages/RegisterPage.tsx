@@ -26,13 +26,13 @@ export default function RegisterPage() {
     <AuthFormContainer>
       <form action="/user" method="post">
         <CsrfToken />
-        <div {...stylex.props(styles.loginHeader)}>
+        <div sx={styles.loginHeader}>
           {'Create Account'}
         </div>
         <div>
           <FormField formName={"email"} placeholder={"Enter your email"} type={"text"} />
           <FormField formName={"password"} placeholder={"Enter your password"} type={"password"} />
-          <input type="submit" {...stylex.props(styles.submitButton)} value="Submit" />
+          <input type="submit" sx={styles.submitButton} value="Submit" />
         </div>
       </form>
     </AuthFormContainer>

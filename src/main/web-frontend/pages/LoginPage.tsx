@@ -49,7 +49,7 @@ export default function LoginPage() {
 
   return (
       <AuthFormContainer>
-        <div {...stylex.props(styles.loginHeader)}>
+        <div sx={styles.loginHeader}>
           {'Sign In'}
         </div>
         <ErrorBanner
@@ -58,13 +58,13 @@ export default function LoginPage() {
         />
         <form action="/login" method="POST">
           <CsrfToken />
-          <div {...stylex.props(styles.formContainer)}>
+          <div sx={styles.formContainer}>
             <FormField labelText={"Email"} formName={"username"} placeholder={"Enter your Email"} type={"text"}/>
           </div>
-          <div {...stylex.props(styles.formContainer)}>
+          <div sx={styles.formContainer}>
             <FormField labelText={"Password"} formName={"password"} placeholder={"Enter your password"} type={"password"}/>
           </div>
-          <input {...stylex.props(styles.submitButton)} name="submit" type="submit" value="Sign In" />
+          <input sx={styles.submitButton} name="submit" type="submit" value="Sign In" />
         </form>
       </AuthFormContainer>
   )

@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const result = useLazyLoadQuery<HomePageQuery>(query, {})
   return (
-    <div {...stylex.props(styles.root)}>
+    <div sx={styles.root}>
       <div>{result?.bar}</div>
       <FooBar murp={result}/>
     </div>

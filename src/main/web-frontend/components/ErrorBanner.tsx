@@ -19,7 +19,7 @@ export default function ErrorBanner(props: Props) {
     return null
   }
   return (
-    <div {...stylex.props(styles.errorAlert)}>
+    <div sx={styles.errorAlert}>
       {props.isVisible}
     </div>
   )
