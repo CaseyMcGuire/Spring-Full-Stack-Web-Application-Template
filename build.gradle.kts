@@ -13,6 +13,10 @@ val myNodeVersion = "20.11.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.12.0"
 val exposedVersion = "1.3.0"
+// Matches the version managed by the spring-boot-dependencies BOM. It has to be stated explicitly because
+// that BOM provides Testcontainers through a nested testcontainers-bom import, which the
+// io.spring.dependency-management plugin doesn't surface to the org.testcontainers:* coordinates.
+val testcontainersVersion = "2.0.5"
 
 val pathToApplicationFolder = "src/main/kotlin/com"
 val applicationFolder = File(rootProject.projectDir, pathToApplicationFolder)
@@ -46,6 +50,13 @@ dependencyManagement {
   imports {
     mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${dgsVersion}")
     mavenBom("org.springframework.boot:spring-boot-dependencies:${springVersion}")
+  }
+  dependencies {
+    // DGS 12 needs json-path 3.0.0 for its Jackson 3 integration (com.jayway.jsonpath.spi.json.Jackson3JsonProvider).
+    // The Spring Boot 4 BOM is imported last and otherwise wins, forcing the older 2.10.0 (even over DGS's
+    // strict 3.0.0 requirement); 2.10.0 lacks that class, so the DGS query executor fails to instantiate at
+    // startup. Pin 3.0.0 explicitly for every configuration.
+    dependency("com.jayway.jsonpath:json-path:3.0.0")
   }
 }
 
@@ -91,12 +102,25 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-  // With these two dependencies, Spring will automatically run Flyway migrations on startup.
-  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  // spring-boot-starter-jdbc supplies the DataSource/HikariCP autoconfiguration (consumed by
+  // DatabaseConfiguration and by Flyway). We deliberately avoid spring-boot-starter-data-jpa: this app
+  // does its data access with Exposed + jOOQ, so Hibernate/Spring Data JPA would be dead weight.
+  implementation("org.springframework.boot:spring-boot-starter-jdbc")
+  // Flyway applies its migrations on startup. Spring Boot 4 split each integration's autoconfiguration
+  // into its own module, so the Flyway autoconfiguration (formerly bundled in spring-boot-autoconfigure)
+  // must be pulled in explicitly via spring-boot-flyway, alongside the engine and the Postgres support.
+  implementation("org.springframework.boot:spring-boot-flyway")
   implementation("org.flywaydb:flyway-core:$flywayVersion")
   implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
   implementation("io.github.classgraph:classgraph:4.8.184")
+
+  // Testing. The spring-boot-* artifacts are versioned by the spring-boot-dependencies BOM; the
+  // org.testcontainers:* modules are pinned to $testcontainersVersion (see the note by its declaration).
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-testcontainers")
+  testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testcontainersVersion")
+  testImplementation("org.testcontainers:testcontainers-postgresql:$testcontainersVersion")
 }
 
 java {
@@ -114,6 +138,10 @@ kotlin {
 
 tasks.withType<JavaCompile>().configureEach {
   options.release.set(javaVersion)
+}
+
+tasks.withType<Test>().configureEach {
+  useJUnitPlatform()
 }
 
 tasks.register<NpmTask>("webpack") {

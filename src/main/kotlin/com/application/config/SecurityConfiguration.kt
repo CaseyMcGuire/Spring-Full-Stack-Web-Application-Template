@@ -1,10 +1,7 @@
 package com.application.config
 
-import com.application.services.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
@@ -14,27 +11,20 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 
+// Authentication is wired up by Spring Security automatically: because a single UserDetailsService bean
+// (UserDetailsServiceImpl) and a PasswordEncoder bean are present, it configures a DaoAuthenticationProvider
+// and AuthenticationManager for us. No need to build one by hand from the HttpSecurity shared object.
 @EnableWebSecurity
 @Configuration
-open class SecurityConfiguration(private val userDetailsService: UserDetailsServiceImpl){
+class SecurityConfiguration {
 
   @Bean
-  open fun passwordEncoder(): PasswordEncoder? {
+  fun passwordEncoder(): PasswordEncoder {
     return BCryptPasswordEncoder()
   }
 
   @Bean
-  open fun authenticationManager(http: HttpSecurity): AuthenticationManager {
-    val authenticationManagerBuilder = http.getSharedObject(
-      AuthenticationManagerBuilder::class.java
-    )
-    authenticationManagerBuilder.userDetailsService(userDetailsService)
-      .passwordEncoder(passwordEncoder())
-    return authenticationManagerBuilder.build()
-  }
-
-  @Bean
-  open fun filterChain(http: HttpSecurity): SecurityFilterChain {
+  fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
     // Use the plain CsrfTokenRequestAttributeHandler (not the default XOR-based one)
     // to produce a stable CSRF token compatible with the SPA frontend.
