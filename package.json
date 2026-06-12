@@ -55,7 +55,6 @@
     "css-loader": "^7.1.4",
     "fork-ts-checker-webpack-plugin": "^9.1.0",
     "graphql": "^16.14.0",
-    "graphql-compiler": "^1.7.0",
     "js-beautify": "^1.15.4",
     "mini-css-extract-plugin": "^2.10.2",
     "relay-compiler": "^21.0.0",
