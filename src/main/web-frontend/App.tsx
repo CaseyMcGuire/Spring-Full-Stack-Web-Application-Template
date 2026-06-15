@@ -1,15 +1,14 @@
-import * as React from "react";
-import {RelayConfig} from "./relay/RelayConfig";
 import {
   createBrowserRouter, RouterProvider
 } from "react-router";
 import HomePage from "pages/HomePage";
-import {RelayEnvironmentProvider} from "react-relay/hooks";
+import {createRelayEnvironment, RelayRoot} from "@spa-kit/react-relay";
+import {renderComponent} from "@spa-kit/react";
 import AboutPage from "./pages/AboutPage";
 import BlogPage from "./pages/BlogPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import {renderComponent} from "./utils/ReactPageUtils";
+import CsrfUtils from "./utils/CsrfUtils";
 import './styles.css';
 
 const router = createBrowserRouter([
@@ -35,13 +34,15 @@ const router = createBrowserRouter([
   }
 ])
 
+const environment = createRelayEnvironment({
+  headers: () => ({ [CsrfUtils.getHeader()]: CsrfUtils.getToken() }),
+});
+
 export function App() {
   return (
-    <RelayEnvironmentProvider environment={RelayConfig.getEnvironment()}>
-      <React.Suspense fallback={null}>
-        <RouterProvider router={router} />
-      </React.Suspense>
-    </RelayEnvironmentProvider>
+    <RelayRoot environment={environment} fallback={null}>
+      <RouterProvider router={router} />
+    </RelayRoot>
   );
 }
 

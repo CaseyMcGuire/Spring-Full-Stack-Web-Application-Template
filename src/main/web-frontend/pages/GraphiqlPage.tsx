@@ -2,7 +2,7 @@ import 'graphiql/setup-workers/webpack';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import * as React from 'react';
 import { GraphiQL } from 'graphiql';
-import { renderComponent } from 'utils/ReactPageUtils';
+import { renderComponent } from '@spa-kit/react';
 import 'graphiql/style.css';
 import CsrfUtils from "utils/CsrfUtils";
 
