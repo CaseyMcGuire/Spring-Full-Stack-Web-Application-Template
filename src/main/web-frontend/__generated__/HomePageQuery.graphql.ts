@@ -1,7 +1,6 @@
 /**
- * @generated SignedSource<<1cbd549704388d696a7a47b796b02b2c>>
+ * @generated SignedSource<<efb87453635dfeeeec74ec7fa586419a>>
  * @lightSyntaxTransform
- * @nogrep
  */
 
 /* tslint:disable */
@@ -41,7 +40,7 @@ return {
     "metadata": null,
     "name": "HomePageQuery",
     "selections": [
-      (v0/*: any*/),
+      (v0/*:: as any*/),
       {
         "args": null,
         "kind": "FragmentSpread",
@@ -57,7 +56,7 @@ return {
     "kind": "Operation",
     "name": "HomePageQuery",
     "selections": [
-      (v0/*: any*/),
+      (v0/*:: as any*/),
       {
         "alias": null,
         "args": null,

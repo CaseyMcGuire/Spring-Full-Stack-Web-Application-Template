@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit",
     "webpack": "npm run typecheck && node_modules/webpack-cli/bin/cli.js --config webpack.production.ts",
     "webpack-development": "node_modules/webpack-cli/bin/cli.js --config webpack.development.ts",
-    "relay-compiler": "babel-node -x .ts -- bin/generateSchemaAndRunRelayCompiler.ts"
+    "relay-compiler": "spa-kit-compile-relay --schema-dir src/main/resources/schema --out src/main/resources/relay/schema.graphql"
   },
   "relay": {
     "src": "src/main/web-frontend",
@@ -32,7 +32,6 @@
     "@spa-kit/react-relay": "^0.0.1",
     "@stylexjs/stylex": "^0.18.3",
     "graphiql": "^5.2.3",
-    "graphql-tools": "^9.0.28",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-relay": "^21.0.0",
@@ -41,10 +40,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
-    "@babel/node": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
+    "@spa-kit/node": "^0.0.2",
     "@stylexjs/unplugin": "^0.18.3",
     "@types/js-beautify": "^1.14.3",
     "@types/node": "^25.9.1",
