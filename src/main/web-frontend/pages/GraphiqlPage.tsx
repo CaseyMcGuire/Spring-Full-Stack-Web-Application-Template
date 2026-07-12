@@ -1,4 +1,4 @@
-import 'graphiql/setup-workers/webpack';
+import 'graphiql/setup-workers/vite';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import * as React from 'react';
 import { GraphiQL } from 'graphiql';

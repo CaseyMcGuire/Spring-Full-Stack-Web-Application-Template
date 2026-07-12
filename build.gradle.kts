@@ -9,7 +9,7 @@ val javaVersion = 21
 val postgresVersion = "42.7.11"
 val flywayVersion = "12.6.2" // Matched to the plugin version in target file
 val jooqVersion = "3.21.4"
-val myNodeVersion = "20.11.0"
+val myNodeVersion = "22.14.0"
 val myNpmVersion = "10.4.0"
 val kotlinxHtmlVersion = "0.12.0"
 val exposedVersion = "1.3.0"
@@ -144,25 +144,25 @@ tasks.withType<Test>().configureEach {
   useJUnitPlatform()
 }
 
-tasks.register<NpmTask>("webpack") {
-  npmCommand.set(listOf("run", "webpack"))
+tasks.register<NpmTask>("buildFrontend") {
+  npmCommand.set(listOf("run", "build"))
 }
 
-tasks.register<NpmTask>("webpackDevelopment") {
-  npmCommand.set(listOf("run", "webpack-development"))
+tasks.register<NpmTask>("watchFrontend") {
+  npmCommand.set(listOf("run", "watch"))
 }
 
 tasks.register<NpmTask>("buildRelay") {
   npmCommand.set(listOf("run", "relay-compiler"))
 }
 
-// make sure webpack runs before the processResources task so the TypeScript files are compiled before
-// being copied into the build folder
+// make sure the frontend bundle runs before the processResources task so the TypeScript files
+// are compiled before being copied into the build folder
 tasks.processResources {
   val taskNames = gradle.startParameter.taskNames
   // only run frontend tasks when we're doing a full build
   if (taskNames.any { it.contains("bootRun", ignoreCase = true) }) {
-    dependsOn("npm_install", "webpack")
+    dependsOn("npm_install", "buildFrontend")
   }
 }
 

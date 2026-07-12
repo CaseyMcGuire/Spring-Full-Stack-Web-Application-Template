@@ -44,14 +44,14 @@ This command will:
 2. Run any pending database migrations
 3. Install or update `node` and `npm`, if necessary
 4. Runs `npm install` to get latest node dependencies defined in `package.json`
-5. Runs webpack to compile and bundle client-side code
+5. Runs Vite to compile and bundle client-side code
 6. Starts the server on `localhost:8080`.
 
-If you make client-side changes and want to see them without restarting the server, you can webpack running in development mode. In order to do so, open a new terminal and run the following:
+If you make client-side changes and want to see them without restarting the server, you can run Vite in watch mode. In order to do so, open a new terminal and run the following:
 ```
-./gradlew webpackDevelopment
+./gradlew watchFrontend
 ```
-This will make it so that webpack watches the client-side directories for changes and automatically compile them and bundle them into the `build` directory. Then, you can just refresh the page.
+This will make it so that Vite watches the client-side directories for changes and automatically compiles and bundles them into the `build` directory. Then, you can just refresh the page.
 
 ---
 Whenever you change a client-side GraphQL query supported by Relay, you must rebuild the Relay models. In order to do so, run the following: 

@@ -67,21 +67,12 @@ class ReactPage(
             )
           }
         }
-        style {
-          unsafe {
-            +"""
-
-                    * {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                    }
-
-                    html, body, #root {
-                        height: 100%;
-                    }
-            """.trimIndent()
-          }
+        // index.css carries the global reset (web-frontend/styles.css) plus all
+        // StyleX rules, which the build appends to it; other entries' own CSS is
+        // linked in addition
+        link(rel = "stylesheet", href = "/bundles/index.css")
+        if (bundleName != "index") {
+          link(rel = "stylesheet", href = "/bundles/${bundleName}.css")
         }
         customHead?.invoke(this)
       }

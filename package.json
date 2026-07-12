@@ -5,15 +5,16 @@
   "main": "index.js",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "webpack": "npm run typecheck && node_modules/webpack-cli/bin/cli.js --config webpack.production.ts",
-    "webpack-development": "node_modules/webpack-cli/bin/cli.js --config webpack.development.ts",
+    "build": "npm run typecheck && vite build",
+    "watch": "vite build --watch --mode development --outDir build/resources/main/static/bundles",
     "relay-compiler": "spa-kit-compile-relay --schema-dir src/main/resources/schema --out src/main/resources/relay/schema.graphql"
   },
   "relay": {
     "src": "src/main/web-frontend",
     "language": "typescript",
     "schema": "src/main/resources/relay/schema.graphql",
-    "artifactDirectory": "./src/main/web-frontend/__generated__"
+    "artifactDirectory": "./src/main/web-frontend/__generated__",
+    "eagerEsModules": true
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,6 @@
   },
   "homepage": "https://github.com/CaseyMcGuire/puzzlr-kotlin#readme",
   "dependencies": {
-    "@babel/runtime": "^7.29.7",
     "@graphiql/toolkit": "^0.12.0",
     "@spa-kit/react": "^0.0.1",
     "@spa-kit/react-relay": "^0.0.1",
@@ -40,29 +40,23 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
-    "@babel/preset-react": "^7.29.7",
-    "@babel/preset-typescript": "^7.29.7",
     "@spa-kit/node": "^0.0.2",
     "@stylexjs/unplugin": "^0.18.3",
+    "@types/babel__core": "^7.20.5",
     "@types/js-beautify": "^1.14.3",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@types/react-relay": "^18.2.1",
     "@types/relay-runtime": "^20.1.1",
-    "babel-loader": "^10.1.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "babel-plugin-relay": "^21.0.0",
-    "css-loader": "^7.1.4",
-    "fork-ts-checker-webpack-plugin": "^9.1.0",
     "graphql": "^16.14.0",
     "js-beautify": "^1.15.4",
-    "mini-css-extract-plugin": "^2.10.2",
     "relay-compiler": "^21.0.0",
-    "source-map-loader": "^5.0.0",
+    "rolldown": "~1.1.5",
     "typescript": "^6.0.3",
-    "webpack": "^5.107.2",
-    "webpack-cli": "^7.0.2",
-    "webpack-merge": "^6.0.1"
+    "vite": "^8.1.4",
+    "vite-plugin-checker": "^0.14.4"
   }
 }
