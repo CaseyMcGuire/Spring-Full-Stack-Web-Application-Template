@@ -24,6 +24,7 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 - `src/main/resources/schema/` — the GraphQL schema, split across multiple `.graphql` files. This is the single source of truth for both codegen pipelines below.
 - `src/main/resources/db/migration/` — Flyway migrations, named `V<N>__description.sql` with `N` incrementing.
 - `submodules/customgenerator` — separate Gradle project supplying the jOOQ `CustomGeneratorStrategy` (must live outside the main project to be on the codegen classpath).
+- `.agent/adr/` — architecture decision records: what was chosen, why, and the trade-offs. Read before proposing a change to the stack; add a numbered ADR when making one.
 
 ## How pages get their assets
 
