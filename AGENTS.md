@@ -27,13 +27,7 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 
 ## How pages get their assets
 
-There is no HTML plugin or Vite manifest: `ReactPage.kt` renders the HTML shell and references build outputs **by fixed name**, so the Vite config pins output filenames (`entryFileNames`/`assetFileNames`) and the two sides must stay in sync.
-
-- **Entries**: each page is a Vite entry declared in `build.rolldownOptions.input` (`index` → `App.tsx`, `graphiql` → `GraphiqlPage.tsx`), emitted as `/bundles/<entry>.bundle.js`. A controller serves it with `ReactPage("<entry>", "<title>")`.
-- **react is not bundled**: `react`/`react-dom` stay external (via Rolldown's `esmExternalRequirePlugin`, which also converts CommonJS `require("react")` calls inside deps like react-relay into imports) and resolve in the browser through the esm.sh import map that `ReactPage.kt` emits.
-- **App-wide CSS**: all compiled StyleX rules plus the global reset (`web-frontend/styles.css`, inlined at build time — it is not imported from TypeScript) are emitted as `/bundles/stylex.generated.css` by the `stylexCssFile` plugin in `vite.config.ts`. `ReactPage.kt` links it on every page. StyleX CSS cannot be split per-page by design.
-- **Entry-specific CSS**: if an entry's imports bundle CSS (e.g. GraphiQL's `graphiql/style.css` → `/bundles/graphiql.css`), the entry JS does **not** load it — the page's controller must link it explicitly via `ReactPage.customHead { link(rel = "stylesheet", href = "/bundles/<entry>.css") }` (see `MainController.graphiql()`). CSS of *lazily imported* chunks (e.g. monaco) is injected at runtime by Vite and needs no linking.
-- **Adding a page**: add the entry to `vite.config.ts` `input`, add a controller method returning `ReactPage("<entry>", ...)`, and add the `customHead` CSS link only if the entry imports CSS.
+See [.agents/rules/frontend-assets.md](.agents/rules/frontend-assets.md) for the contract between `ReactPage.kt` and `vite.config.ts` — fixed asset names, the externalized-react import map, the `stylex.generated.css` app-wide stylesheet, explicit `customHead` links for entry CSS, and the steps for adding a new page.
 
 ## The three codegen pipelines
 
