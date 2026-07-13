@@ -10,7 +10,7 @@ val postgresVersion = "42.7.11"
 val flywayVersion = "12.6.2" // Matched to the plugin version in target file
 val jooqVersion = "3.21.4"
 val myNodeVersion = "22.14.0"
-val myNpmVersion = "10.4.0"
+val myNpmVersion = "10.9.2"
 val kotlinxHtmlVersion = "0.12.0"
 val exposedVersion = "1.3.0"
 // Matches the version managed by the spring-boot-dependencies BOM. It has to be stated explicitly because
