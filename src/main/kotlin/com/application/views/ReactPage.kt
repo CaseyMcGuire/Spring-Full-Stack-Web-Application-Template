@@ -69,7 +69,7 @@ class ReactPage(
         }
         // App-wide stylesheet: the global reset (web-frontend/styles.css) plus all
         // compiled StyleX rules (see stylexCssFile in vite.config.ts). Entries whose
-        // imports bundle additional CSS link it via customHead (see MainController)
+        // imports bundle additional CSS can link it via customHead
         link(rel = "stylesheet", href = "/bundles/stylex.generated.css")
         customHead?.invoke(this)
       }
