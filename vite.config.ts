@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -36,10 +37,30 @@ function relay(): Plugin {
   };
 }
 
+// Emits the app-wide stylesheet that every page links: the global reset from
+// styles.css, which the StyleX plugin then appends all compiled StyleX rules to
+// (it targets this asset via cssInjectionTarget below). Emitting it ourselves —
+// rather than letting StyleX pick some entry's CSS — gives the global styles a
+// dedicated, unambiguous file.
+function stylexCssFile(): Plugin {
+  return {
+    name: "stylex-css-file",
+    enforce: "pre", // must emit before the StyleX plugin's generateBundle looks for it
+    generateBundle() {
+      this.emitFile({
+        type: "asset",
+        name: "stylex.generated.css",
+        source: readFileSync(path.join(webFrontend, "styles.css"), "utf8"),
+      });
+    },
+  };
+}
+
 // The StyleX plugin appends its CSS by re-emitting the target asset, which gets
-// deduped to e.g. "index2.css" because the original still holds "index.css" when
-// the copy is named (and Rolldown ignores the plugin's attempt to then drop the
-// original from the bundle). Fix it up on disk so ReactPage.kt can link stable names.
+// deduped to e.g. "stylex.generated2.css" because the original still holds the
+// name when the copy is named (and Rolldown ignores the plugin's attempt to then
+// drop the original from the bundle). Fix it up on disk so ReactPage.kt can link
+// stable names.
 function stableCssNames(): Plugin {
   return {
     name: "stable-css-names",
@@ -71,6 +92,7 @@ export default defineConfig(({ mode }) => ({
     esmExternalRequirePlugin({
       external: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
     }),
+    stylexCssFile(),
     relay(),
     react(),
     stylexPlugin.vite({
@@ -79,9 +101,9 @@ export default defineConfig(({ mode }) => ({
       aliases: {
         "*": path.join(webFrontend, "*"),
       },
-      // All StyleX rules are merged into one payload and appended to the index
-      // entry's stylesheet, which ReactPage.kt links on every page
-      cssInjectionTarget: (fileName: string) => fileName === "index.css",
+      // All StyleX rules are merged into one payload and appended to the dedicated
+      // app-wide stylesheet emitted by stylexCssFile() above
+      cssInjectionTarget: (fileName: string) => fileName === "stylex.generated.css",
     }),
     stableCssNames(),
   ],

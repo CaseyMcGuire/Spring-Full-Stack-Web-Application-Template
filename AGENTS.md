@@ -20,7 +20,7 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 ## Layout
 
 - `src/main/kotlin/com/application/` — backend. The build assumes exactly one folder under `src/main/kotlin/com/` (codegen paths are derived from it). Subpackages: `controllers`, `services`, `dao`, `graphql` (DGS data fetchers), `views` (kotlinx.html server-side pages), `config`, `db`.
-- `src/main/web-frontend/` — frontend (TypeScript, React 19, Relay, React Router, StyleX via the `sx` prop, shared `@spa-kit/*` packages). Bundled by Vite (`vite.config.ts` at repo root) into `src/main/resources/static/bundles/`; `react`/`react-dom` are externals resolved at runtime via the import map in `ReactPage.kt`.
+- `src/main/web-frontend/` — frontend (TypeScript, React 19, Relay, React Router, StyleX via the `sx` prop, shared `@spa-kit/*` packages). Bundled by Vite (`vite.config.ts` at repo root) into `src/main/resources/static/bundles/`; `react`/`react-dom` are externals resolved at runtime via the import map in `ReactPage.kt`. All compiled StyleX rules plus the global reset (`styles.css`) are emitted as `/bundles/stylex.generated.css`, which `ReactPage.kt` links on every page alongside the entry's own CSS.
 - `src/main/resources/schema/` — the GraphQL schema, split across multiple `.graphql` files. This is the single source of truth for both codegen pipelines below.
 - `src/main/resources/db/migration/` — Flyway migrations, named `V<N>__description.sql` with `N` incrementing.
 - `submodules/customgenerator` — separate Gradle project supplying the jOOQ `CustomGeneratorStrategy` (must live outside the main project to be on the codegen classpath).

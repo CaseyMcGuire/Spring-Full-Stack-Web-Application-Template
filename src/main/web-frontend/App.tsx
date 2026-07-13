@@ -9,7 +9,6 @@ import BlogPage from "./pages/BlogPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CsrfUtils from "./utils/CsrfUtils";
-import './styles.css';
 
 const router = createBrowserRouter([
   {
