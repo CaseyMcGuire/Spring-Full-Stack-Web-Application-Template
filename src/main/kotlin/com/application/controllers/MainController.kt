@@ -24,7 +24,12 @@ class MainController {
   @GetMapping("/graphiql")
   @ResponseBody
   fun graphiql(): String {
-    return ReactPage("graphiql", "GraphiQL").render()
+    return ReactPage("graphiql", "GraphiQL")
+      .customHead {
+        // CSS bundled from the graphiql entry's imports (GraphiQL's UI styles)
+        link(rel = "stylesheet", href = "/bundles/graphiql.css")
+      }
+      .render()
   }
 
 }
