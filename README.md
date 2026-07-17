@@ -94,42 +94,19 @@ Once all pending migrations are run, you can regenerate the Jooq models for inte
 
 ## How spa-routing and spa-kit work together
 
-Single-page apps have a coordination problem: the client router, the server's GET mappings, the
-bundler's entry points, and any per-page auth checks all describe the same set of routes, and they
-drift apart when each is maintained by hand. This template solves that with two libraries that meet
-in the middle:
+The client router, the server's GET mappings, the bundler's entry points, and per-page auth checks
+all describe the same set of routes — and drift apart when maintained by hand. Two shared libraries
+keep them in sync:
 
-- **spa-routing** ([sibling repo](../spa-routing), published to mavenLocal) is the Kotlin side: a
-  route contract (`spa-routing-core`), a Gradle codegen plugin, and a Spring Boot starter.
-- **spa-kit** ([sibling repo](../spa-utils), published to npm as `@spa-kit/*`) is the TypeScript
-  side: small runtime packages the generated code and page shells plug into.
+- **spa-routing** (Kotlin) — routes are defined once, as `SpaApplicationDefinition`s in
+  `spa-route-definitions/`. Its Gradle plugin generates the Vite entry map and typed route builders
+  for both languages, and its Spring Boot starter serves a GET mapping per route (so deep links and
+  reloads just work) plus `/__spa/route-decision` for evaluating server-declared route rules.
+- **spa-kit** (`@spa-kit/*` on npm) — the client runtime. `App.tsx` builds its react-router routes
+  from the generated builders, and `@spa-kit/react-router` checks each navigation against
+  `/__spa/route-decision`, so rules like "require login" are declared once on the server and
+  enforced on direct loads and in-page navigations alike.
 
-The flow, end to end:
-
-1. **Routes are defined once, in Kotlin.** Each SPA is a `SpaApplicationDefinition` in the
-   `spa-route-definitions/` Gradle module — its bundle id, URL prefix, and list of routes
-   (e.g. `route("assets/{id}", "AssetDetail")`). This is the single source of truth.
-2. **The spa-routing Gradle plugin generates everything that must agree with it:**
-   - `SinglePageApplicationBundles.ts` — the entry map `vite.config.ts` uses as its build inputs,
-     so a bundle exists per SPA automatically;
-   - `src/main/web-frontend/routes/` — typed TypeScript route builders (`AppRoutes.Home()`,
-     `AppRoutes.AssetDetail({id})`) stamped with each route's application/route ids;
-   - typed Kotlin route objects for referencing routes in server code (e.g. in route rules).
-3. **The spa-routing Spring Boot starter serves the routes.** For every defined route it registers
-   a GET mapping that renders the SPA's HTML shell (this app's `ReactPage`, via
-   `AppSpaHtmlRenderer`), which is what makes deep links and page reloads work without a
-   hand-maintained controller. It also exposes `/__spa/route-decision`, which evaluates any
-   server-declared `SpaRouteRule`s (e.g. "require login") for a given route.
-4. **@spa-kit packages consume all of this on the client.** `App.tsx` builds its react-router
-   routes from the generated `AppRoutes` (paths and ids are never restated), and wraps them with
-   `withRouteAuthorization` + `spaRoutingResolver` from `@spa-kit/react-router` — so before any
-   in-page navigation renders, the server's route rules are consulted via `/__spa/route-decision`,
-   and a deny document-redirects (e.g. anonymous → login). `@spa-kit/react` renders the app into
-   the shell, `@spa-kit/react-relay` supplies the Relay environment, and `@spa-kit/node` provides
-   the build-time `spa-kit-compile-relay` CLI that recombines the split GraphQL schema for Relay.
-
-The net effect: **adding a route is one edit** — add a `route(...)` to the definition, rerun the
-codegen (`./gradlew generateClientRoutes generateWebpackBundleEntries`, run automatically by the
-frontend build tasks), and reference the new `AppRoutes` entry in the router. The server mapping,
-typed URL builder, and auth gating all follow; none of it can drift out of sync.
+Adding a route is one edit to the route definition; the codegen and starter keep everything else in
+step. See AGENTS.md for the mechanics.
 
