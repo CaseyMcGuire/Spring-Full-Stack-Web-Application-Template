@@ -43,6 +43,7 @@ plugins {
   id("com.netflix.dgs.codegen") version "8.5.0"
   id("org.jooq.jooq-codegen-gradle") version "3.21.4"
   id("org.flywaydb.flyway") version "12.6.2"
+  id("io.github.caseymcguire.spa-routing") version "0.1.5"
   id("java")
 }
 
@@ -69,6 +70,8 @@ springBoot {
 
 repositories {
   mavenCentral()
+  // spa-routing artifacts are published to mavenLocal
+  mavenLocal()
 }
 
 dependencies {
@@ -115,6 +118,11 @@ dependencies {
 
   implementation("io.github.classgraph:classgraph:4.8.184")
 
+  // spa-routing: shared SPA route definitions (single source of truth) + the Spring Boot
+  // starter that serves them. The starter pulls in spa-routing-core and the autoconfigure.
+  implementation(project(":spa-route-definitions"))
+  implementation("io.github.caseymcguire:spa-routing-spring-boot-starter:0.1.5")
+
   // Testing. The spring-boot-* artifacts are versioned by the spring-boot-dependencies BOM; the
   // org.testcontainers:* modules are pinned to $testcontainersVersion (see the note by its declaration).
   testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -144,11 +152,37 @@ tasks.withType<Test>().configureEach {
   useJUnitPlatform()
 }
 
+// Generate SPA routes from the single source of truth in :spa-route-definitions:
+//  - generateClientRoutes         -> typed TS route builders under src/main/web-frontend/routes
+//  - generateWebpackBundleEntries -> overwrites SinglePageApplicationBundles.ts (Vite input map)
+//  - generateServerSpaRoutes      -> typed Kotlin route objects (auto-wired into compileKotlin)
+spaRouting {
+  routeDefinitions {
+    projectPath = ":spa-route-definitions"
+    sourceDirectory = "src/main/kotlin/com/application/spa"
+  }
+  clientRoutes {
+    // Deliberately outside __generated__: the Relay compiler cleans unexpected files from its
+    // artifact directory, which would delete these generated route builders on every run.
+    outputDirectory = "src/main/web-frontend/routes"
+  }
+  serverRoutes {
+    packageName = "com.application.generated.spa.routes"
+    sourceRoot = "build/generated/source/spaRoutes/main"
+  }
+  webpackBundleEntries {
+    outputFile = "SinglePageApplicationBundles.ts"
+  }
+}
+
 tasks.register<NpmTask>("buildFrontend") {
+  // Generate the bundle-entry file and typed client routes before bundling/typechecking
+  dependsOn("generateWebpackBundleEntries", "generateClientRoutes")
   npmCommand.set(listOf("run", "build"))
 }
 
 tasks.register<NpmTask>("watchFrontend") {
+  dependsOn("generateWebpackBundleEntries", "generateClientRoutes")
   npmCommand.set(listOf("run", "watch"))
 }
 

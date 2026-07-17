@@ -56,7 +56,22 @@ Generic frontend/build plumbing (Relay environment setup, page rendering helpers
 
 **Trade-off:** template upgrades sometimes require publishing a package first, and peer-dependency ranges must track dependency bumps (e.g. `@spa-kit/react` pins the StyleX major).
 
-## 10. Cookie-based CSRF (double-submit) for the SPA
+## 10. Routes defined once, in Kotlin, via spa-routing
+
+SPA routes live in `SpaApplicationDefinition` objects in the `spa-route-definitions/` Gradle
+subproject — a single source of truth from which the `io.github.caseymcguire.spa-routing`
+Gradle plugin generates the Vite entry map, typed TypeScript route builders, and typed Kotlin
+route objects, while its Spring Boot starter registers a server GET mapping per route (making
+deep links and reloads work without hand-maintained controllers). The client wraps its
+react-router routes in `withRouteAuthorization`/`spaRoutingResolver` (`@spa-kit/react-router`),
+which consults `/__spa/route-decision` so server-declared route rules gate in-page navigation
+too. Replaced a hand-written `MainController` whose path list silently had to mirror App.tsx.
+
+**Trade-off:** a codegen step between editing routes and using them, and the spa-routing
+artifacts are currently published to mavenLocal only, so building this template requires them
+installed locally.
+
+## 11. Cookie-based CSRF (double-submit) for the SPA
 
 Spring Security uses `CookieCsrfTokenRepository` (non-HttpOnly) with the plain request-attribute handler, and `CsrfCookieFilter` forces the deferred token to be written on every response so the first page load already carries the `XSRF-TOKEN` cookie. The client echoes it back as `X-XSRF-TOKEN` (`CsrfUtils.ts`).
 

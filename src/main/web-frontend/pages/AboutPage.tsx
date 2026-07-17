@@ -9,6 +9,6 @@ const styles = stylex.create({
 })
 export default function AboutPage() {
   return (
-    <div {...styles.body}>About</div>
+    <div sx={styles.body}>About</div>
   )
 }

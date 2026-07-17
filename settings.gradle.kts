@@ -1,4 +1,16 @@
+pluginManagement {
+  repositories {
+    // spa-routing's Gradle plugin is published to mavenLocal
+    mavenLocal()
+    gradlePluginPortal()
+    mavenCentral()
+  }
+}
+
 rootProject.name = "application"
+
+// Single source of truth for SPA route definitions (see AGENTS.md)
+include("spa-route-definitions")
 
 fun includeSubmodulesFromDirectory(directoryName: String) {
   val submodulesDir = file(directoryName)

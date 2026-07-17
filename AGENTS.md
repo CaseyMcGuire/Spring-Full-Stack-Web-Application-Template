@@ -23,6 +23,7 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 - `src/main/web-frontend/` — frontend (TypeScript, React 19, Relay, React Router, StyleX via the `sx` prop, shared `@spa-kit/*` packages). Bundled by Vite (`vite.config.ts` at repo root) into `src/main/resources/static/bundles/`. See "How pages get their assets" below.
 - `src/main/resources/schema/` — the GraphQL schema, split across multiple `.graphql` files. This is the single source of truth for both codegen pipelines below.
 - `src/main/resources/db/migration/` — Flyway migrations, named `V<N>__description.sql` with `N` incrementing.
+- `spa-route-definitions/` — Gradle subproject holding the `SpaApplicationDefinition` objects: the single source of truth for every SPA's bundle and routes (see "How pages get their assets"). Separate module so spa-routing codegen doesn't cycle with the root `compileKotlin`.
 - `submodules/customgenerator` — separate Gradle project supplying the jOOQ `CustomGeneratorStrategy` (must live outside the main project to be on the codegen classpath).
 - `.agent/adr/` — architecture decision records: what was chosen, why, and the trade-offs. Read before proposing a change to the stack; add a numbered ADR when making one.
 
@@ -30,19 +31,22 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 
 There is no HTML plugin or Vite manifest: `ReactPage.kt` renders the HTML shell and references build outputs **by fixed name**, so the Vite config pins output filenames (`entryFileNames`/`assetFileNames`) and the two sides must stay in sync.
 
-- **Entries**: each page is a Vite entry declared in `build.rolldownOptions.input` (`index` → `App.tsx`, `graphiql` → `GraphiqlPage.tsx`), emitted as `/bundles/<entry>.bundle.js`. A controller serves it with `ReactPage("<entry>", "<title>")`.
+- **Entries**: each SPA is declared as a `SpaApplicationDefinition` in `spa-route-definitions/` (the single source of truth for both bundles and URLs). Codegen turns those into the Vite input map (`SinglePageApplicationBundles.ts`) and typed client route builders (`src/main/web-frontend/routes/`); the spa-routing Spring Boot starter registers a server GET route per defined route, rendered by `AppSpaHtmlRenderer` via `ReactPage`. Bundles are emitted as `/bundles/<id>.bundle.js`.
 - **react is not bundled**: `react`/`react-dom` stay external (via Rolldown's `esmExternalRequirePlugin`, which also converts CommonJS `require("react")` calls inside deps like react-relay into imports) and resolve in the browser through the esm.sh import map that `ReactPage.kt` emits.
 - **App-wide CSS**: all compiled StyleX rules plus the global reset (`web-frontend/styles.css`, inlined at build time — it is not imported from TypeScript) are emitted as `/bundles/stylex.generated.css` by the `stylexCssFile` plugin in `vite.config.ts`. `ReactPage.kt` links it on every page. StyleX CSS cannot be split per-page by design.
-- **Entry-specific CSS**: if an entry's imports bundle CSS (e.g. GraphiQL's `graphiql/style.css` → `/bundles/graphiql.css`), the entry JS does **not** load it — the page's controller must link it explicitly via `ReactPage.customHead { link(rel = "stylesheet", href = "/bundles/<entry>.css") }` (see `MainController.graphiql()`). CSS of *lazily imported* chunks (e.g. monaco) is injected at runtime by Vite and needs no linking.
-- **Adding a page**: add the entry to `vite.config.ts` `input`, add a controller method returning `ReactPage("<entry>", ...)`, and add the `customHead` CSS link only if the entry imports CSS.
+- **Entry-specific CSS**: if an entry's imports bundle CSS (e.g. GraphiQL's `graphiql/style.css` → `/bundles/graphiql.css`), the entry JS does **not** load it — the SPA's `SinglePageApplicationConfig` must link it by overriding `renderHtml()` with a `ReactPage.customHead { link(...) }` (see `GraphiqlSpaConfig`). CSS of *lazily imported* chunks (e.g. monaco) is injected at runtime by Vite and needs no linking.
+- **Adding a client route to the main app**: add a `route(...)` to `AppSpaApplication` in `spa-route-definitions/`, run `./gradlew generateClientRoutes generateWebpackBundleEntries` (the `buildFrontend`/`watchFrontend` tasks do this automatically), then reference the generated `AppRoutes.<Name>` entry in `App.tsx`'s route list. The server GET mapping appears automatically.
+- **Adding a whole new SPA**: add a `SpaApplicationDefinition` object in `spa-route-definitions/` plus a `SinglePageApplicationConfig` `@Component` — no vite.config or controller changes needed.
+- **Route authorization**: `App.tsx` wraps its routes in `withRouteAuthorization` + `spaRoutingResolver` (from `@spa-kit/react-router`), which asks `/__spa/route-decision` before each in-page navigation. No rules are declared, so everything allows; add `SpaRouteRule`s in `AppSpaConfig` to gate pages without client changes.
 
-## The three codegen pipelines
+## The four codegen pipelines
 
 1. **DGS (server)**: Gradle's DGS codegen generates Kotlin types from `src/main/resources/schema/` into `build/generated` (package `com.application.graphql`). Runs as part of the build; not committed.
 2. **Relay (client)**: `npm run relay-compiler` runs `spa-kit-compile-relay` (from `@spa-kit/node`), which combines the split schema files into a transient `src/main/resources/relay/schema.graphql`, runs `relay-compiler` against it, then deletes it. Artifacts land in `src/main/web-frontend/__generated__/` and **are committed** — rerun after any GraphQL query/fragment/schema change and commit the result. Relay config lives in the `"relay"` key of `package.json`.
 3. **jOOQ (database)**: `./gradlew generateJooq` introspects the live Postgres database and writes Kotlin models to `src/main/kotlin/com/application/db/codegen/` — **committed**. Regenerate after running a new migration.
+4. **spa-routing (routes)**: the `io.github.caseymcguire.spa-routing` Gradle plugin reads the `SpaApplicationDefinition`s in `spa-route-definitions/` and generates the Vite input map (`SinglePageApplicationBundles.ts`, **committed**), typed TS route builders (`src/main/web-frontend/routes/`, **committed** — kept outside `__generated__` because the Relay compiler deletes unexpected files there), and typed Kotlin route objects (`build/generated`, not committed). `buildFrontend`/`watchFrontend` regenerate the first two automatically.
 
-Never hand-edit generated code (`__generated__/`, `db/codegen/`).
+Never hand-edit generated code (`__generated__/`, `db/codegen/`, `routes/`, `SinglePageApplicationBundles.ts`).
 
 ## Workflow conventions
 
