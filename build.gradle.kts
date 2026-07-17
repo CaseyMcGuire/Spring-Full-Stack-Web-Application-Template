@@ -172,6 +172,22 @@ node {
   version.set(myNodeVersion)
   npmVersion.set(myNpmVersion)
   download.set(true)
+  // The plugin derives the Node download's architecture from the JVM's os.arch, so a
+  // Gradle daemon on an x86_64 JDK running under Rosetta (e.g. an Intel-build JDK 21 on
+  // Apple silicon) downloads x64 Node. That node's npm then prunes the arm64 native
+  // bindings (rolldown, esbuild) from node_modules that every arm64 invocation needs —
+  // and vice versa — producing "Cannot find native binding" errors that alternate
+  // between environments. Pin the platform to the real hardware instead; uname can't be
+  // used because Rosetta translates child processes too, but sysctl reports the truth.
+  if (System.getProperty("os.name").lowercase().contains("mac")) {
+    val isAppleSilicon = runCatching {
+      ProcessBuilder("sysctl", "-n", "hw.optional.arm64").start()
+        .inputStream.bufferedReader().readText().trim() == "1"
+    }.getOrDefault(false)
+    if (isAppleSilicon) {
+      resolvedPlatform.set(com.github.gradle.node.util.Platform("darwin", "arm64"))
+    }
+  }
 }
 
 tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
