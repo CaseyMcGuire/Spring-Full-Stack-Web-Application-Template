@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { transformAsync } from "@babel/core";
+import babel from "@rolldown/plugin-babel";
 import stylexPlugin from "@stylexjs/unplugin";
 import react from "@vitejs/plugin-react";
 import { esmExternalRequirePlugin } from "rolldown/plugins";
@@ -11,32 +11,6 @@ import checker from "vite-plugin-checker";
 import bundleEntries from "./SinglePageApplicationBundles";
 
 const webFrontend = path.resolve(__dirname, "src/main/web-frontend");
-
-// Rewrites graphql`...` tags into imports of the __generated__ artifacts.
-// babel-plugin-relay picks up the "relay" config from package.json.
-// (@vitejs/plugin-react v6 dropped its babel option, so this runs the plugin directly.)
-function relay(): Plugin {
-  return {
-    name: "relay",
-    enforce: "pre",
-    async transform(code, id) {
-      if (!/\.tsx?$/.test(id) || id.includes("node_modules") || !code.includes("graphql`")) {
-        return null;
-      }
-      const result = await transformAsync(code, {
-        plugins: ["relay"],
-        parserOpts: {
-          plugins: id.endsWith(".tsx") ? ["jsx", "typescript"] : ["typescript"],
-        },
-        babelrc: false,
-        configFile: false,
-        filename: id,
-        sourceMaps: true,
-      });
-      return result?.code ? { code: result.code, map: result.map } : null;
-    },
-  };
-}
 
 // Emits the app-wide stylesheet that every page links: the global reset from
 // styles.css, which the StyleX plugin then appends all compiled StyleX rules to
@@ -58,7 +32,7 @@ function stylexCssFile(): Plugin {
 }
 
 // The StyleX plugin appends its CSS by re-emitting the target asset, and the copy
-// gets deduped to "stylex.generated2.css" because the original still holds the name
+// gets deduped to "stylex2.generated.css" because the original still holds the name
 // at the moment the copy is named. Rename it back in the bundle graph (property
 // mutation propagates on both Rollup and Rolldown; re-keying the bundle object does
 // not) so ReactPage.kt's fixed link resolves. Deletable if the StyleX plugin ever
@@ -98,7 +72,9 @@ export default defineConfig(({ mode }) => ({
       external: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
     }),
     stylexCssFile(),
-    relay(),
+    // babel-plugin-relay rewrites graphql`...` tags into imports of the __generated__
+    // artifacts; it reads the "relay" config from package.json
+    babel({ plugins: ["relay"] }),
     react(),
     stylexPlugin.vite({
       useCSSLayers: true,
