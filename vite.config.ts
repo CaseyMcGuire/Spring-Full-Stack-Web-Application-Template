@@ -1,5 +1,4 @@
 import { readFileSync } from "node:fs";
-import fs from "node:fs/promises";
 import path from "node:path";
 
 import { transformAsync } from "@babel/core";
@@ -58,24 +57,28 @@ function stylexCssFile(): Plugin {
   };
 }
 
-// The StyleX plugin appends its CSS by re-emitting the target asset, which gets
-// deduped to e.g. "stylex.generated2.css" because the original still holds the
-// name when the copy is named (and Rolldown ignores the plugin's attempt to then
-// drop the original from the bundle). Fix it up on disk so ReactPage.kt can link
-// stable names.
-function stableCssNames(): Plugin {
+// The StyleX plugin appends its CSS by re-emitting the target asset, and the copy
+// gets deduped to "stylex.generated2.css" because the original still holds the name
+// at the moment the copy is named. Rename it back in the bundle graph (property
+// mutation propagates on both Rollup and Rolldown; re-keying the bundle object does
+// not) so ReactPage.kt's fixed link resolves. Deletable if the StyleX plugin ever
+// updates the asset in place instead of re-emitting it.
+function stableStylexCssName(): Plugin {
   return {
-    name: "stable-css-names",
-    async writeBundle(options, bundle) {
-      const outDir = options.dir;
-      if (!outDir) return;
-      for (const [fileName, item] of Object.entries(bundle)) {
-        if (item.type !== "asset" || !fileName.endsWith(".css")) continue;
-        const wanted = item.names[0];
-        if (!wanted || wanted === fileName) continue;
-        // The deduped copy supersedes any stale original emitted under the wanted name
-        await fs.rename(path.join(outDir, fileName), path.join(outDir, wanted));
+    name: "stable-stylex-css-name",
+    enforce: "post",
+    generateBundle(_options, bundle) {
+      for (const item of Object.values(bundle)) {
+        if (
+          item.type === "asset" &&
+          item.names[0] === "stylex.generated.css"
+        ) {
+          item.fileName = "stylex.generated.css";
+          return;
+        }
       }
+
+      this.error("StyleX CSS asset was not emitted");
     },
   };
 }
@@ -107,7 +110,7 @@ export default defineConfig(({ mode }) => ({
       // app-wide stylesheet emitted by stylexCssFile() above
       cssInjectionTarget: (fileName: string) => fileName === "stylex.generated.css",
     }),
-    stableCssNames(),
+    stableStylexCssName(),
   ],
   resolve: {
     // Resolve absolute imports like "pages/HomePage" via tsconfig's baseUrl
