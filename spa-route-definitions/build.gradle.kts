@@ -22,5 +22,5 @@ repositories {
 dependencies {
   // `api` so the root app transitively gets the route contract types
   // (SpaApplicationDefinition, SpaTypedRoute, SpaRouteTarget) used by generated code.
-  api("io.github.caseymcguire:spa-routing-core:0.1.5")
+  api("io.github.caseymcguire:spa-routing-core:0.2.0")
 }

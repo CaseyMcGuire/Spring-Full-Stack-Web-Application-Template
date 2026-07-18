@@ -43,7 +43,7 @@ plugins {
   id("com.netflix.dgs.codegen") version "8.5.0"
   id("org.jooq.jooq-codegen-gradle") version "3.21.4"
   id("org.flywaydb.flyway") version "12.6.2"
-  id("io.github.caseymcguire.spa-routing") version "0.1.5"
+  id("io.github.caseymcguire.spa-routing") version "0.2.0"
   id("java")
 }
 
@@ -121,7 +121,7 @@ dependencies {
   // spa-routing: shared SPA route definitions (single source of truth) + the Spring Boot
   // starter that serves them. The starter pulls in spa-routing-core and the autoconfigure.
   implementation(project(":spa-route-definitions"))
-  implementation("io.github.caseymcguire:spa-routing-spring-boot-starter:0.1.5")
+  implementation("io.github.caseymcguire:spa-routing-spring-boot-starter:0.2.0")
 
   // Testing. The spring-boot-* artifacts are versioned by the spring-boot-dependencies BOM; the
   // org.testcontainers:* modules are pinned to $testcontainersVersion (see the note by its declaration).
@@ -153,9 +153,9 @@ tasks.withType<Test>().configureEach {
 }
 
 // Generate SPA routes from the single source of truth in :spa-route-definitions:
-//  - generateClientRoutes         -> typed TS route builders under src/main/web-frontend/routes
-//  - generateWebpackBundleEntries -> overwrites SinglePageApplicationBundles.ts (Vite input map)
-//  - generateServerSpaRoutes      -> typed Kotlin route objects (auto-wired into compileKotlin)
+//  - generateClientRoutes    -> typed TS route builders under src/main/web-frontend/routes
+//  - generateBundleEntries   -> overwrites SinglePageApplicationBundles.ts (Vite input map)
+//  - generateServerSpaRoutes -> typed Kotlin route objects (auto-wired into compileKotlin)
 spaRouting {
   routeDefinitions {
     projectPath = ":spa-route-definitions"
@@ -170,19 +170,19 @@ spaRouting {
     packageName = "com.application.generated.spa.routes"
     sourceRoot = "build/generated/source/spaRoutes/main"
   }
-  webpackBundleEntries {
+  bundleEntries {
     outputFile = "SinglePageApplicationBundles.ts"
   }
 }
 
 tasks.register<NpmTask>("buildFrontend") {
   // Generate the bundle-entry file and typed client routes before bundling/typechecking
-  dependsOn("generateWebpackBundleEntries", "generateClientRoutes")
+  dependsOn("generateBundleEntries", "generateClientRoutes")
   npmCommand.set(listOf("run", "build"))
 }
 
 tasks.register<NpmTask>("watchFrontend") {
-  dependsOn("generateWebpackBundleEntries", "generateClientRoutes")
+  dependsOn("generateBundleEntries", "generateClientRoutes")
   npmCommand.set(listOf("run", "watch"))
 }
 
