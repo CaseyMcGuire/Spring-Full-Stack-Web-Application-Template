@@ -69,12 +69,18 @@ export default defineConfig(({ mode }) => ({
     // dependencies like react-relay into imports, which Rolldown otherwise leaves
     // as browser-breaking runtime requires (rolldown.rs/in-depth/bundling-cjs)
     esmExternalRequirePlugin({
-      external: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
+      external: [
+        "react",
+        "react/compiler-runtime",
+        "react/jsx-runtime",
+        "react-dom",
+        "react-dom/client",
+      ],
     }),
     stylexCssFile(),
-    // babel-plugin-relay rewrites graphql`...` tags into imports of the __generated__
-    // artifacts; it reads the "relay" config from package.json
-    babel({ plugins: ["relay"] }),
+    // React Compiler must see the original component source before other Babel
+    // transforms. Relay then rewrites graphql`...` tags into __generated__ imports.
+    babel({ plugins: ["babel-plugin-react-compiler", "relay"] }),
     react(),
     stylexPlugin.vite({
       useCSSLayers: true,
