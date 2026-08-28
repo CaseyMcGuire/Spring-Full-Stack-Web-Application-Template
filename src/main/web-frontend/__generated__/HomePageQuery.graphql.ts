@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<efb87453635dfeeeec74ec7fa586419a>>
+ * @generated SignedSource<<067ab112d925be1951eacb1a70cad48f>>
  * @lightSyntaxTransform
  */
 
@@ -8,11 +8,9 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from 'relay-runtime';
-import { FragmentRefs } from "relay-runtime";
 export type HomePageQuery$variables = Record<PropertyKey, never>;
 export type HomePageQuery$data = {
-  readonly bar: string;
-  readonly " $fragmentSpreads": FragmentRefs<"FooBar_murp">;
+  readonly welcomeMessage: string;
 };
 export type HomePageQuery = {
   response: HomePageQuery$data;
@@ -20,33 +18,22 @@ export type HomePageQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
-  "alias": null,
-  "args": [
-    {
-      "kind": "Literal",
-      "name": "baz",
-      "value": "asldkfj"
-    }
-  ],
-  "kind": "ScalarField",
-  "name": "bar",
-  "storageKey": "bar(baz:\"asldkfj\")"
-};
+var v0 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "welcomeMessage",
+    "storageKey": null
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
     "name": "HomePageQuery",
-    "selections": [
-      (v0/*:: as any*/),
-      {
-        "args": null,
-        "kind": "FragmentSpread",
-        "name": "FooBar_murp"
-      }
-    ],
+    "selections": (v0/*:: as any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -55,41 +42,19 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "HomePageQuery",
-    "selections": [
-      (v0/*:: as any*/),
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "foo",
-        "storageKey": null
-      },
-      {
-        "alias": "murp",
-        "args": [
-          {
-            "kind": "Literal",
-            "name": "baz",
-            "value": "aljskdfasf"
-          }
-        ],
-        "kind": "ScalarField",
-        "name": "bar",
-        "storageKey": "bar(baz:\"aljskdfasf\")"
-      }
-    ]
+    "selections": (v0/*:: as any*/)
   },
   "params": {
-    "cacheID": "28a96c9df69b1a1d4f4ac455957531d8",
+    "cacheID": "b2e40e80136a17d589d2d196b675a9f7",
     "id": null,
     "metadata": {},
     "name": "HomePageQuery",
     "operationKind": "query",
-    "text": "query HomePageQuery {\n  bar(baz: \"asldkfj\")\n  ...FooBar_murp\n}\n\nfragment FooBar_murp on Query {\n  foo\n  murp: bar(baz: \"aljskdfasf\")\n}\n"
+    "text": "query HomePageQuery {\n  welcomeMessage\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fbfa424d1bed52ba427f6ca2845da4bf";
+(node as any).hash = "57a2a8056256267c89aadd89f4792b89";
 
 export default node;

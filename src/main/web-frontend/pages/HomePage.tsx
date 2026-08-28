@@ -1,37 +1,31 @@
-import * as React from 'react';
-import {graphql} from "react-relay";
-import FooBar from "./FooBar";
-import {useLazyLoadQuery} from "react-relay/hooks";
-import {HomePageQuery} from "../__generated__/HomePageQuery.graphql";
-import * as stylex from '@stylexjs/stylex';
+import * as stylex from "@stylexjs/stylex";
+import { graphql, useLazyLoadQuery } from "react-relay";
+import type { HomePageQuery } from "../__generated__/HomePageQuery.graphql";
+
+const homePageQuery = graphql`
+  query HomePageQuery {
+    welcomeMessage
+  }
+`;
 
 const styles = stylex.create({
   root: {
-    backgroundColor: 'lightblue',
-    fontSize: 16,
-    lineHeight: 1.5,
-    color: 'rgb(60,60,60)',
-  }
+    color: "rgb(35, 35, 35)",
+    padding: "64px 24px",
+    textAlign: "center",
+  },
+  heading: {
+    fontSize: 32,
+    lineHeight: 1.2,
+  },
 });
 
 export default function HomePage() {
-    const query = graphql`
-      query HomePageQuery {
-        bar(baz: "asldkfj")
-        ...FooBar_murp
-      }
-    `;
+  const data = useLazyLoadQuery<HomePageQuery>(homePageQuery, {});
 
-  const result = useLazyLoadQuery<HomePageQuery>(query, {})
   return (
-    <div sx={styles.root}>
-      <div>{result?.bar}</div>
-      <FooBar murp={result}/>
-    </div>
-  )
-
+    <main sx={styles.root}>
+      <h1 sx={styles.heading}>{data.welcomeMessage}</h1>
+    </main>
+  );
 }
-
-
-
-
