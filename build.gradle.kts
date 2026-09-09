@@ -8,11 +8,10 @@ val dgsVersion = "12.0.0"
 val javaVersion = 21
 val postgresVersion = "42.7.11"
 val flywayVersion = "12.6.2" // Matched to the plugin version in target file
-val jooqVersion = "3.21.4"
+val entktVersion: String by project
 val myNodeVersion = "22.14.0"
 val myNpmVersion = "10.9.2"
 val kotlinxHtmlVersion = "0.12.0"
-val exposedVersion = "1.3.0"
 // Matches the version managed by the spring-boot-dependencies BOM. It has to be stated explicitly because
 // that BOM provides Testcontainers through a nested testcontainers-bom import, which the
 // io.spring.dependency-management plugin doesn't surface to the org.testcontainers:* coordinates.
@@ -28,9 +27,7 @@ val applicationFolderName = applicationFolder.list()?.singleOrNull()
         "with the project structure."
   )
 
-val jooqCodegenPath = "src/main/kotlin/com/${applicationFolderName}/db/codegen"
 val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
-val migrationScriptPath = "com.application.db.GenerateMigrationScriptKt"
 
 plugins {
   id("org.jetbrains.kotlin.jvm") version "2.3.21"
@@ -41,7 +38,7 @@ plugins {
   id("io.spring.dependency-management") version "1.1.7"
   id("com.github.node-gradle.node") version "7.1.0"
   id("com.netflix.dgs.codegen") version "8.5.0"
-  id("org.jooq.jooq-codegen-gradle") version "3.21.4"
+  id("io.entkt")
   id("org.flywaydb.flyway") version "12.6.2"
   id("io.github.caseymcguire.spa-routing") version "0.2.0"
   id("java")
@@ -70,7 +67,7 @@ springBoot {
 
 repositories {
   mavenCentral()
-  // spa-routing artifacts are published to mavenLocal
+  // EntKt and spa-routing artifacts are published to mavenLocal
   mavenLocal()
 }
 
@@ -81,33 +78,21 @@ dependencies {
 
   implementation("com.netflix.graphql.dgs:dgs-starter")
 
-  // for application runtime
-  implementation("org.jooq:jooq:$jooqVersion")
-  implementation("org.jooq:jooq-meta:$jooqVersion")
-  implementation("org.jooq:jooq-codegen:$jooqVersion")
-
-  // This ensures these libraries will be on the classpath for the jooqCodegen gradle task
-  jooqCodegen("org.jooq:jooq-codegen:$jooqVersion")
-  jooqCodegen("org.jooq:jooq-meta:$jooqVersion")
-  jooqCodegen("org.postgresql:postgresql:$postgresVersion")
-  jooqCodegen(project(":customgenerator"))
+  // Schemas compile independently so EntKt can generate the app's entity client before compileKotlin.
+  schemas(project(":ent-schema"))
+  entktCodegen("io.entkt:codegen:$entktVersion")
+  entktCodegen("io.entkt:postgres:$entktVersion")
+  implementation("io.entkt:runtime:$entktVersion")
+  implementation("io.entkt:postgres:$entktVersion")
 
   implementation("org.postgresql:postgresql:${postgresVersion}")
-  implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-  implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-  implementation("org.jetbrains.exposed:spring-transaction:$exposedVersion")
-
-  implementation("org.jetbrains.exposed:exposed-migration-core:$exposedVersion")
-  implementation("org.jetbrains.exposed:exposed-migration-jdbc:$exposedVersion")
-
-  implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   // spring-boot-starter-jdbc supplies the DataSource/HikariCP autoconfiguration (consumed by
   // DatabaseConfiguration and by Flyway). We deliberately avoid spring-boot-starter-data-jpa: this app
-  // does its data access with Exposed + jOOQ, so Hibernate/Spring Data JPA would be dead weight.
+  // does its data access with EntKt, so Hibernate/Spring Data JPA would be dead weight.
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   // Flyway applies its migrations on startup. Spring Boot 4 split each integration's autoconfiguration
   // into its own module, so the Flyway autoconfiguration (formerly bundled in spring-boot-autoconfigure)
@@ -115,8 +100,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-flyway")
   implementation("org.flywaydb:flyway-core:$flywayVersion")
   implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
-
-  implementation("io.github.classgraph:classgraph:4.8.184")
 
   // spa-routing: shared SPA route definitions (single source of truth) + the Spring Boot
   // starter that serves them. The starter pulls in spa-routing-core and the autoconfigure.
@@ -150,6 +133,10 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Test>().configureEach {
   useJUnitPlatform()
+}
+
+entkt {
+  packageName.set("com.${applicationFolderName}.ent")
 }
 
 // Generate SPA routes from the single source of truth in :spa-route-definitions:
@@ -255,51 +242,10 @@ tasks.getByName<BootRun>("bootRun") {
   mainClass.set("com.application.MainKt")
 }
 
-tasks.register<JavaExec>("generateMigrationScript") {
-  description = "Generates a SQL migration script which can be used by Flyway."
-  // This tells Gradle to use the project's compiled classes and all its dependencies
-  classpath = sourceSets.main.get().runtimeClasspath
-  environment = envVariables
-  mainClass.set(migrationScriptPath)
-}
-
 // Spring automatically handles flyway migrations but adding this task allows running flyway tasks
 // from the command line. See: https://flywaydb.org/documentation/usage/gradle/
 flyway {
   url = dbUrl
   user = dbUser
   password = dbPassword
-}
-
-jooq {
-  configuration {
-    jdbc {
-      driver = "org.postgresql.Driver"
-      url = dbUrl
-      user = dbUser
-      password = dbPassword
-    }
-    generator {
-      name = "org.jooq.codegen.KotlinGenerator"
-      target {
-        packageName = "generated.jooq"
-        directory = jooqCodegenPath
-      }
-      database {
-        // See https://www.postgresqltutorial.com/postgresql-administration/postgresql-schema/
-        // for more explanation about the difference between databases and schemas in Postgres
-        inputSchema = "public"
-        excludes = "flyway_schema_history"
-      }
-      generate {
-        isImmutablePojos = true
-      }
-      strategy {
-        // Note: In order for this to work, this class must be in a different gradle project and the gradle project
-        // must be included as a dependency of the jooqCodegen gradle task (see above in 'dependencies' block).
-        // See https://github.com/etiennestuder/gradle-jooq-plugin/blob/ac7f25ada8c8a15b0e3692ef038f6dd0fd6a42ac/example/configure_custom_generator_strategy/build.gradle#L12
-        name = "com.application.CustomGeneratorStrategy"
-      }
-    }
-  }
 }

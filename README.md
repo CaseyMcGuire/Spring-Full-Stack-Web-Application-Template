@@ -5,7 +5,7 @@ This is a project template I use for creating new web applications. It uses the 
 - [Spring Boot](https://spring.io/projects/spring-boot) as the web application framework 
 - [kotlinx.html](https://github.com/kotlin/kotlinx.html) for server-side HTML rendering.
 - [Postgres](https://www.postgresql.org/) as the database
-- [Jooq](https://www.jooq.org/) for creating typesafe SQL queries.
+- [EntKt](https://github.com/CaseyMcGuire/EntKt) for typed entities, queries, and mutations.
 - [Flyway](https://flywaydb.org/) for handling database migrations.
 - [GraphQL](https://graphql.org/) as the API query language (using [Netflix DGS](https://netflix.github.io/dgs/))
 - [TypeScript](https://www.typescriptlang.org/) as the client-side language of choice
@@ -17,6 +17,20 @@ This is a project template I use for creating new web applications. It uses the 
 - spa-routing (Kotlin/Gradle/Spring) and `@spa-kit/*` (npm) — my shared libraries for wiring single-page apps into a Spring backend (see below)
 
 ## Setup (for Mac)
+
+### Install local Kotlin libraries
+
+EntKt and spa-routing currently need their artifacts installed in Maven local. EntKt's version is
+pinned in `gradle.properties` (`0.1.0-alpha.1`). From the EntKt checkout, publish the required modules:
+
+```sh
+./gradlew :schema:publishToMavenLocal :runtime:publishToMavenLocal \
+  :migrations:publishToMavenLocal :codegen:publishToMavenLocal \
+  :postgres:publishToMavenLocal :gradle-plugin:publishToMavenLocal
+```
+
+The checkout's `entktVersion` must match this project's pin. From the spa-routing checkout, run
+`./gradlew publishToMavenLocal` for version `0.2.0`.
 
 ### Setup database
 
@@ -87,10 +101,34 @@ There are two ways to run all pending migrations:
     - By default, Spring automatically runs Flyway migrations on application startup (see [here](https://docs.spring.io/spring-boot/docs/2.0.0.M5/reference/html/howto-database-initialization.html#howto-execute-flyway-database-migrations-on-startup))
 2. Run `./gradlew flywayMigrate` from the application root.
 
-Once all pending migrations are run, you can regenerate the Jooq models for interacting with your tables in a typesafe way on the server.
-```
-./gradlew generateJooq
-```
+### EntKt entities
+
+Entity definitions live in the separate `ent-schema/` Gradle module. The initial `User` schema maps
+the existing `users` table: its `BIGSERIAL` id, unique email, and `hashed_password` column. Password
+hashes are marked sensitive so generated entity string representations omit them. The original
+Flyway migrations and their `VARCHAR(255)` constraints remain unchanged. The `posts` table remains
+in the database but does not yet have an EntKt schema.
+
+`./gradlew generateEntkt` generates `com.application.ent` into `build/generated/entkt`, including
+`User` and `EntClient`. Backend compilation runs this automatically; generated files are not
+committed. `./gradlew validateEntSchemas` checks the definitions without a running database.
+
+When changing storage, edit the EntKt definition and add a new Flyway SQL migration. Flyway remains
+the authority for physical column types and constraints: EntKt's `string` fields can read the
+existing varchar columns, but its default DDL describes them as text. Automatic DDL and EntKt's
+Flyway migration generator are not enabled for this partial schema adoption.
+
+`UserDao` uses the generated client for registration and credential lookup. `UserService` still
+hashes passwords, and Spring Security handles login. `UserPolicy` explicitly permits public creation;
+registration saves with an anonymous viewer and does not load the credential entity. Only the internal
+password lookup bypasses entity privacy because it happens before authentication. Ordinary viewers
+cannot read, update, or delete credential entities. For multi-operation transactions, use
+`EntClient.withTransaction` and the client passed into its block; the default driver does not join
+Spring `@Transactional` scopes.
+
+Exposed and jOOQ, including their migration/codegen tooling, have been removed. Run `./gradlew test`
+with Docker running to check user persistence, existing-row compatibility, and credential loading
+against a disposable PostgreSQL database.
 
 ## How spa-routing and spa-kit work together
 
@@ -109,4 +147,3 @@ keep them in sync:
 
 Adding a route is one edit to the route definition; the codegen and starter keep everything else in
 step. See AGENTS.md for the mechanics.
-

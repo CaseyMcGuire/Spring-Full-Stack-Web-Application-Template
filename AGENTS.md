@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Template repo for full-stack web apps: Kotlin/Spring Boot backend serving a GraphQL API (Netflix DGS) to a React/Relay frontend, with Postgres behind jOOQ/Exposed and Flyway migrations. The Gradle build orchestrates everything, including the frontend (via the node-gradle plugin, which downloads its own Node/npm).
+Template repo for full-stack web apps: Kotlin/Spring Boot backend serving a GraphQL API (Netflix DGS) to a React/Relay frontend, with Postgres behind EntKt and Flyway migrations. The Gradle build orchestrates everything, including the frontend (via the node-gradle plugin, which downloads its own Node/npm).
 
 ## Commands
 
@@ -13,9 +13,12 @@ Template repo for full-stack web apps: Kotlin/Spring Boot backend serving a Grap
 | Production frontend bundle (typecheck + Vite build) | `npm run build` |
 | Backend tests | `./gradlew test` — requires Docker (Testcontainers spins up `postgres:16-alpine`) |
 | Apply DB migrations without starting the app | `./gradlew flywayMigrate` |
-| Regenerate jOOQ models after a migration | `./gradlew generateJooq` |
+| Regenerate EntKt entities and client | `./gradlew generateEntkt` (also runs before backend compilation) |
+| Validate EntKt schema definitions | `./gradlew validateEntSchemas` |
 
 Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_URL_PREFIX` — `build.gradle.kts` reads it eagerly, so **all Gradle commands fail without it**. `./bin/setup_database` creates the database.
+
+EntKt artifacts currently resolve from Maven local; publish the version pinned by `entktVersion` in `gradle.properties` from the EntKt checkout before building (see README.md). The spa-routing artifacts also need to be installed locally.
 
 ## Layout
 
@@ -24,7 +27,7 @@ Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_
 - `src/main/resources/schema/` — the GraphQL schema, split across multiple `.graphql` files. This is the single source of truth for both codegen pipelines below.
 - `src/main/resources/db/migration/` — Flyway migrations, named `V<N>__description.sql` with `N` incrementing.
 - `spa-route-definitions/` — Gradle subproject holding the `SpaApplicationDefinition` objects: the single source of truth for every SPA's bundle and routes (see "How pages get their assets"). Separate module so spa-routing codegen doesn't cycle with the root `compileKotlin`.
-- `submodules/customgenerator` — separate Gradle project supplying the jOOQ `CustomGeneratorStrategy` (must live outside the main project to be on the codegen classpath).
+- `ent-schema/` — EntKt entity definitions, compiled separately so codegen can run before the backend compiles. Currently maps only `users`; the existing `posts` table is preserved by Flyway but has no EntKt schema yet.
 - `.agent/adr/` — architecture decision records: what was chosen, why, and the trade-offs. Read before proposing a change to the stack; add a numbered ADR when making one.
 
 ## How pages get their assets
@@ -44,13 +47,20 @@ There is no HTML plugin or Vite manifest: `ReactPage.kt` renders the HTML shell 
 
 1. **DGS (server)**: Gradle's DGS codegen generates Kotlin types from `src/main/resources/schema/` into `build/generated` (package `com.application.graphql`). Runs as part of the build; not committed.
 2. **Relay (client)**: `npm run relay-compiler` runs `spa-kit-compile-relay` (from `@spa-kit/node`), which combines the split schema files into a transient `src/main/resources/relay/schema.graphql`, runs `relay-compiler` against it, then deletes it. Artifacts land in `src/main/web-frontend/__generated__/` and **are committed** — rerun after any GraphQL query/fragment/schema change and commit the result. Relay config lives in the `"relay"` key of `package.json`.
-3. **jOOQ (database)**: `./gradlew generateJooq` introspects the live Postgres database and writes Kotlin models to `src/main/kotlin/com/application/db/codegen/` — **committed**. Regenerate after running a new migration.
+3. **EntKt (database)**: `./gradlew generateEntkt` compiles the schemas in `ent-schema/` and generates entities, typed query/mutation APIs, and `EntClient` into `build/generated/entkt` (package `com.application.ent`). Runs before backend compilation; not committed and needs no live database. Flyway SQL remains authoritative for database changes; edit both the entity definition and a new migration when changing storage.
 4. **spa-routing (routes)**: the `io.github.caseymcguire.spa-routing` Gradle plugin reads the `SpaApplicationDefinition`s in `spa-route-definitions/` and generates the Vite input map (`SinglePageApplicationBundles.ts`, **committed**), typed TS route builders (`src/main/web-frontend/routes/`, **committed** — kept outside `__generated__` because the Relay compiler deletes unexpected files there), and typed Kotlin route objects (`build/generated`, not committed). `buildFrontend`/`watchFrontend` regenerate the first two automatically.
 
-Never hand-edit generated code (`__generated__/`, `db/codegen/`, `routes/`, `SinglePageApplicationBundles.ts`).
+Never hand-edit generated code (`build/generated/`, `__generated__/`, `routes/`, `SinglePageApplicationBundles.ts`).
+
+## Database access
+
+- `DatabaseConfiguration` supplies an `EntClient` using Spring's `DataSource` and `PostgresDriver(autoDdl = false)`. Flyway applies SQL; EntKt never creates or alters tables on startup.
+- `UserPolicy` explicitly permits public registration (`create(allowAll)`). `UserDao.createUser` saves with an anonymous viewer, without loading the credential entity. Read/update/delete remain denied to ordinary viewers. Only `UserDao.findByEmail` uses a private, explicitly justified privacy bypass because login must read credentials before authentication; do not reuse this bypass for mutations or API-facing queries.
+- Use EntKt's `withTransaction { tx -> ... }` for multi-operation transactions and use the supplied `tx` client inside the block. EntKt does not participate in Spring `@Transactional` through its default Postgres driver.
+- Exposed, jOOQ, and their generators have been removed. Write Flyway migrations directly for now; EntKt's migration plugin is not configured while the schemas cover only part of the database.
 
 ## Workflow conventions
 
 - Commit directly to `master` and push; do not create feature branches or PRs.
-- After schema changes, keep all three codegen outputs in sync: migration → `flywayMigrate` → `generateJooq`; GraphQL schema edit → server rebuild picks up DGS types → `buildRelay` for the client.
+- After database changes, update `ent-schema/` and add a Flyway migration, then run `flywayMigrate` and rebuild (EntKt generation runs automatically). After GraphQL schema edits, the server rebuild picks up DGS types; run `buildRelay` for the client and commit its artifacts.
 - Frontend deps are managed in root `package.json`; the checked-in `package-lock.json` matters because Gradle runs `npm install` during `bootRun` builds.

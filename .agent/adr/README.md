@@ -16,6 +16,8 @@ The API is GraphQL served by DGS. The schema is the single source of truth, spli
 
 ## 3. Postgres with jOOQ + Exposed; no JPA/Hibernate
 
+**Superseded by [0012: EntKt for user data access](0012-entkt-user-data-access.md).**
+
 Data access uses jOOQ (typesafe SQL, models generated from the live database via `./gradlew generateJooq`) and Exposed, over plain `spring-boot-starter-jdbc`. Spring Data JPA/Hibernate is deliberately excluded as dead weight. Migrations are Flyway, applied on startup.
 
 **Trade-off:** schema changes require a codegen step (`flywayMigrate` → `generateJooq`) and the generated models are committed.
@@ -77,4 +79,4 @@ Spring Security uses `CookieCsrfTokenRepository` (non-HttpOnly) with the plain r
 
 ## Index
 
-_Add new numbered ADR files here as decisions are made or reversed._
+- [0012: EntKt for user data access](0012-entkt-user-data-access.md)
