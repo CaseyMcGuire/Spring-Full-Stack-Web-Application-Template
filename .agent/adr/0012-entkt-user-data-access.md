@@ -41,5 +41,5 @@ connections; use `EntClient.withTransaction` and its supplied client for atomic 
 not Spring's `@Transactional` alone.
 
 Integration tests exercise the unchanged migrations in PostgreSQL, user creation and lookup,
-pre-existing rows, duplicate-email constraints, password hashing and credential loading, and
+registration policies, duplicate-email constraints, password hashing and credential loading, and
 denial of ordinary credential reads.

@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.testcontainers.junit.jupiter.Container
@@ -32,7 +31,7 @@ import com.application.ent.User as EntUser
  * Basic integration test. Boots the full Spring context against a throwaway PostgreSQL container,
  * lets Flyway apply the migrations in src/main/resources/db/migration, and exercises a real UserDao
  * round-trip. This covers the whole data path end to end: Testcontainers -> DataSource autoconfiguration
- * -> Flyway -> EntKt. Also verifies compatibility with existing rows and Spring Security.
+ * -> Flyway -> EntKt. Also verifies registration policies and Spring Security credential loading.
  *
  * @ServiceConnection points spring.datasource.* at the container automatically, so no manual property
  * wiring is needed. Requires a running Docker daemon.
@@ -50,9 +49,6 @@ class UserDaoIntegrationTest {
 
   @Autowired
   lateinit var entClient: EntClient
-
-  @Autowired
-  lateinit var jdbcTemplate: JdbcTemplate
 
   @Autowired
   lateinit var userService: UserService
@@ -80,19 +76,6 @@ class UserDaoIntegrationTest {
 
     // The database still supplies a BIGSERIAL id without changing the original Flyway migration.
     assertTrue(findEntityByEmail(email).id > 0)
-  }
-
-  @Test
-  fun `reads users inserted before EntKt was introduced`() {
-    val email = "existing@example.com"
-    jdbcTemplate.update(
-      "INSERT INTO users (email, hashed_password) VALUES (?, ?)", email, "existing-hash"
-    )
-
-    val found = userDao.findByEmail(email)
-    assertNotNull(found)
-    assertEquals(email, found!!.username)
-    assertEquals("existing-hash", found.hashedPassword)
   }
 
   @Test

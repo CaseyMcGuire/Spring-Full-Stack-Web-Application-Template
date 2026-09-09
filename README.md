@@ -127,7 +127,7 @@ cannot read, update, or delete credential entities. For multi-operation transact
 Spring `@Transactional` scopes.
 
 Exposed and jOOQ, including their migration/codegen tooling, have been removed. Run `./gradlew test`
-with Docker running to check user persistence, existing-row compatibility, and credential loading
+with Docker running to check user persistence, registration policies, and credential loading
 against a disposable PostgreSQL database.
 
 ## How spa-routing and spa-kit work together
