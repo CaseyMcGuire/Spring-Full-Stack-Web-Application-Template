@@ -18,10 +18,7 @@ This is a project template I use for creating new web applications. It uses the 
 
 ## Setup (for Mac)
 
-With Codex, ask it to **use `$setup-project` to set up this checkout**. The repository skill
-at [`.agents/skills/setup-project/SKILL.md`](.agents/skills/setup-project/SKILL.md) checks the
-prerequisites, configures the local database, installs dependencies, and verifies the running app.
-The manual steps follow.
+Use `$setup-project` in Codex or `/setup-project` in Claude Code to set up this checkout.
 
 ### Install Java
 
