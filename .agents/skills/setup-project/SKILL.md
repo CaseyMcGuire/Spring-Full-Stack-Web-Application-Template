@@ -11,7 +11,6 @@ Bring the requested checkout to a working local app. Run the setup, rather than 
 
 - Work from the requested repo root. Read `AGENTS.md`, the setup section of `README.md`, `build.gradle.kts`, `settings.gradle.kts`, `gradle/gradle-daemon-jvm.properties`, and `bin/setup_database` as needed.
 - Take Java, Node/npm, dependency, and test-container versions from the checkout; do not substitute the newest releases. The current build downloads Gradle and Node/npm itself. Java must be installed and discoverable by Gradle.
-- EntKt and spa-routing resolve from public repositories. Try normal dependency resolution before asking for sibling checkouts or local publishing; older docs may describe a Maven-local requirement. If resolution fails, diagnose the exact artifact, repository, and network error before changing dependencies.
 
 ## Configure local prerequisites
 

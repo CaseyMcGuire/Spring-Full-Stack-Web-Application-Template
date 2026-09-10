@@ -31,9 +31,6 @@ wrapper downloads Gradle 9.7.1, and the build downloads Node 26.8.2 and npm 12.0
 EntKt is pinned in `gradle.properties` (`0.1.0-alpha.1`, its latest published release; no stable
 release is available yet). Its artifacts are available from Maven Central.
 
-EntKt and spa-routing resolve from public repositories; sibling checkouts and Maven-local
-publishing are not required for setup.
-
 GraphQL.js stays on the latest 16.x patch because `@spa-kit/node` and `@spa-kit/react-relay`
 still require that major. Other transitive backend libraries follow the Spring Boot and DGS BOMs.
 
