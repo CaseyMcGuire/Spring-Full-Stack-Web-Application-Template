@@ -18,7 +18,12 @@ This is a project template I use for creating new web applications. It uses the 
 
 ## Setup (for Mac)
 
-### Install Java and local Kotlin libraries
+With Codex, ask it to **use `$setup-project` to set up this checkout**. The repository skill
+at [`.agents/skills/setup-project/SKILL.md`](.agents/skills/setup-project/SKILL.md) checks the
+prerequisites, configures the local database, installs dependencies, and verifies the running app.
+The manual steps follow.
+
+### Install Java
 
 Install JDK 26. Gradle's checked-in daemon criteria and all modules use Java 26. The Gradle
 wrapper downloads Gradle 9.7.1, and the build downloads Node 26.8.2 and npm 12.0.2 automatically.
@@ -26,8 +31,8 @@ wrapper downloads Gradle 9.7.1, and the build downloads Node 26.8.2 and npm 12.0
 EntKt is pinned in `gradle.properties` (`0.1.0-alpha.1`, its latest published release; no stable
 release is available yet). Its artifacts are available from Maven Central.
 
-The spa-routing 0.3.0 Gradle plugin still needs to be installed in Maven local. From a
-spa-routing checkout at version `0.3.0`, run `./gradlew publishToMavenLocal`.
+EntKt and spa-routing resolve from public repositories; sibling checkouts and Maven-local
+publishing are not required for setup.
 
 GraphQL.js stays on the latest 16.x patch because `@spa-kit/node` and `@spa-kit/react-relay`
 still require that major. Other transitive backend libraries follow the Spring Boot and DGS BOMs.
@@ -35,9 +40,9 @@ still require that major. Other transitive backend libraries follow the Spring B
 ### Setup database
 
 1) Install [Postgres](https://www.postgresql.org/download/).
-2) Create a `.env` file in the project root directory (use `.env.example` as an example)
+2) Create a `.env` file in the project root directory (use `.env.example` as an example). Use plain `KEY=value` lines without blank lines, comments, quotes, or `=` inside values; the current Gradle parser does not support those forms.
 3) Set the `DB_USER`, `DB_PASSWORD`, and `DB_NAME` variables in your `.env` file as your database username, password, name, respectively.
-4) Run `./bin/setup_database` in the root of the project.
+4) With PostgreSQL running and `psql` on PATH, run `bash ./bin/setup_database` in the root of the project. The helper assumes local administrator access through `psql -U postgres`; for another admin account or database endpoint, create the application role and database using that connection instead.
 5) (Optional) The variable `DB_URL_PREFIX` is set to default Postgres database URL is `jdbc:postgresql://localhost:5432/` but it can be changed. The application assumes that the URL to connect to the database will be `DB_URL_PREFIX` concatenated with `DB_NAME`, where `DB_NAME` is the name of the database specified above (you can read more about connecting to a Postgres database [here](https://www.postgresql.org/docs/6.4/jdbc19100.htm#:~:text=Defaults%20to%20%22localhost%22.)). For example, if your `DB_NAME` variable is `test_db`, then the URL will be assumed to be `jdbc:postgresql://localhost:5432/test_db`.
 
 - For example, suppose our user was named `test_user`, our password `test_password`, and `DB_NAME` was `test_database`, then our `.env` would something like this:
@@ -45,12 +50,13 @@ still require that major. Other transitive backend libraries follow the Spring B
 DB_USER=test_user
 DB_PASSWORD=test_password
 DB_NAME=test_database
-DB_URL_PREFIX=jdbc:postgresql://localhost:5432/ # keep the default
+DB_URL_PREFIX=jdbc:postgresql://localhost:5432/
 ```
 
 ### How to run
 In order to start:
 ```
+./gradlew npm_ci # First setup: install the checked-in frontend dependencies
 ./gradlew bootRun
 ```
 and navigate to `localhost:8080` in your web browser. 

@@ -18,7 +18,7 @@ Template repo for full-stack web apps: Kotlin/Spring Boot backend serving a Grap
 
 Prerequisites: JDK 26 (also used by the Gradle daemon) and a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_URL_PREFIX` — `build.gradle.kts` reads it eagerly, so **all Gradle commands fail without it**. `./bin/setup_database` creates the database.
 
-EntKt is pinned by `entktVersion` in `gradle.properties` and resolves from Maven Central. The spa-routing 0.3.0 Gradle plugin must be published to Maven local before building (see README.md).
+Use the repository skill at `.agents/skills/setup-project/SKILL.md` for fresh-clone setup.
 
 ## Layout
 
