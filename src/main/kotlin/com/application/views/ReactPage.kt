@@ -9,7 +9,7 @@ class ReactPage(
 ) : RenderablePage {
 
   companion object {
-    private const val REACT_VERSION = "19.2.6"
+    private const val REACT_VERSION = "19.3.0"
     val REACT_INPUT = ImportMapInput("react", "https://esm.sh/react@$REACT_VERSION")
     val REACT_SUBPATH_INPUT = ImportMapInput("react/", "https://esm.sh/react@$REACT_VERSION/")
     val REACT_DOM_INPUT = ImportMapInput("react-dom", "https://esm.sh/react-dom@$REACT_VERSION")

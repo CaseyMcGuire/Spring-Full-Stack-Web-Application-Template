@@ -153,6 +153,6 @@ class UserDaoIntegrationTest {
     @Container
     @ServiceConnection
     @JvmStatic
-    val postgres = PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
+    val postgres = PostgreSQLContainer(DockerImageName.parse("postgres:18.6-alpine"))
   }
 }

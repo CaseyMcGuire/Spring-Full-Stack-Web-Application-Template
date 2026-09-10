@@ -9,9 +9,9 @@ plugins {
   kotlin("jvm")
 }
 
-// Match the root project's Java 21 toolchain so the produced bytecode is consumable by it
+// Match the root project's Java 26 toolchain so the produced bytecode is consumable by it
 kotlin {
-  jvmToolchain(21)
+  jvmToolchain(26)
 }
 
 repositories {
@@ -22,5 +22,5 @@ repositories {
 dependencies {
   // `api` so the root app transitively gets the route contract types
   // (SpaApplicationDefinition, SpaTypedRoute, SpaRouteTarget) used by generated code.
-  api("io.github.caseymcguire:spa-routing-core:0.2.0")
+  api("io.github.caseymcguire:spa-routing-core:0.3.0")
 }

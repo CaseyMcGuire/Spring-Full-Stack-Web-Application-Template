@@ -11,14 +11,14 @@ Template repo for full-stack web apps: Kotlin/Spring Boot backend serving a Grap
 | Rebuild Relay artifacts after changing a query/fragment | `./gradlew buildRelay` (or `npm run relay-compiler`) |
 | Typecheck frontend | `npm run typecheck` |
 | Production frontend bundle (typecheck + Vite build) | `npm run build` |
-| Backend tests | `./gradlew test` — requires Docker (Testcontainers spins up `postgres:16-alpine`) |
+| Backend tests | `./gradlew test` — requires Docker (Testcontainers spins up `postgres:18.6-alpine`) |
 | Apply DB migrations without starting the app | `./gradlew flywayMigrate` |
 | Regenerate EntKt entities and client | `./gradlew generateEntkt` (also runs before backend compilation) |
 | Validate EntKt schema definitions | `./gradlew validateEntSchemas` |
 
-Prerequisite: a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_URL_PREFIX` — `build.gradle.kts` reads it eagerly, so **all Gradle commands fail without it**. `./bin/setup_database` creates the database.
+Prerequisites: JDK 26 (also used by the Gradle daemon) and a `.env` file in the repo root with `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_URL_PREFIX` — `build.gradle.kts` reads it eagerly, so **all Gradle commands fail without it**. `./bin/setup_database` creates the database.
 
-EntKt artifacts currently resolve from Maven local; publish the version pinned by `entktVersion` in `gradle.properties` from the EntKt checkout before building (see README.md). The spa-routing artifacts also need to be installed locally.
+EntKt is pinned by `entktVersion` in `gradle.properties` and resolves from Maven Central. The spa-routing 0.3.0 Gradle plugin must be published to Maven local before building (see README.md).
 
 ## Layout
 

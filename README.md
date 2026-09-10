@@ -18,19 +18,19 @@ This is a project template I use for creating new web applications. It uses the 
 
 ## Setup (for Mac)
 
-### Install local Kotlin libraries
+### Install Java and local Kotlin libraries
 
-EntKt and spa-routing currently need their artifacts installed in Maven local. EntKt's version is
-pinned in `gradle.properties` (`0.1.0-alpha.1`). From the EntKt checkout, publish the required modules:
+Install JDK 26. Gradle's checked-in daemon criteria and all modules use Java 26. The Gradle
+wrapper downloads Gradle 9.7.1, and the build downloads Node 26.8.2 and npm 12.0.2 automatically.
 
-```sh
-./gradlew :schema:publishToMavenLocal :runtime:publishToMavenLocal \
-  :migrations:publishToMavenLocal :codegen:publishToMavenLocal \
-  :postgres:publishToMavenLocal :gradle-plugin:publishToMavenLocal
-```
+EntKt is pinned in `gradle.properties` (`0.1.0-alpha.1`, its latest published release; no stable
+release is available yet). Its artifacts are available from Maven Central.
 
-The checkout's `entktVersion` must match this project's pin. From the spa-routing checkout, run
-`./gradlew publishToMavenLocal` for version `0.2.0`.
+The spa-routing 0.3.0 Gradle plugin still needs to be installed in Maven local. From a
+spa-routing checkout at version `0.3.0`, run `./gradlew publishToMavenLocal`.
+
+GraphQL.js stays on the latest 16.x patch because `@spa-kit/node` and `@spa-kit/react-relay`
+still require that major. Other transitive backend libraries follow the Spring Boot and DGS BOMs.
 
 ### Setup database
 
@@ -67,7 +67,7 @@ If you make client-side changes and want to see them without restarting the serv
 ```
 ./gradlew watchFrontend
 ```
-This will make it so that Vite watches the client-side directories for changes and automatically compiles and bundles them into the `build` directory. Then, you can just refresh the page.
+Vite watches the client-side directories and rebuilds the bundles in `build`. Each rebuild runs the TypeScript 7 compiler to report type errors. Refresh the page to see changes.
 
 ---
 Whenever you change a client-side GraphQL query supported by Relay, you must rebuild the Relay models. In order to do so, run the following: 

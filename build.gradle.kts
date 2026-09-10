@@ -2,15 +2,14 @@ import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val springVersion = "4.0.6"
-val dgsVersion = "12.0.0"
-// if you change this, you must update the `java.runtime.version` param in the 'system.properties' file to the same value
-val javaVersion = 21
-val postgresVersion = "42.7.11"
-val flywayVersion = "12.6.2" // Matched to the plugin version in target file
-val entktVersion: String by project
-val myNodeVersion = "22.14.0"
-val myNpmVersion = "10.9.2"
+val springVersion = "4.1.1"
+val dgsVersion = "12.0.1"
+val javaVersion = 26
+val postgresVersion = "42.7.13"
+val flywayVersion = "13.5.0" // Matched to the plugin version in target file
+val entktVersion = providers.gradleProperty("entktVersion").get()
+val myNodeVersion = "26.8.2"
+val myNpmVersion = "12.0.2"
 val kotlinxHtmlVersion = "0.12.0"
 // Matches the version managed by the spring-boot-dependencies BOM. It has to be stated explicitly because
 // that BOM provides Testcontainers through a nested testcontainers-bom import, which the
@@ -30,17 +29,17 @@ val applicationFolderName = applicationFolder.list()?.singleOrNull()
 val dgsCodegenPackage = "com.${applicationFolderName}.graphql"
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "2.3.21"
+  id("org.jetbrains.kotlin.jvm") version "2.4.20"
   // Kotlin makes all classes final by default but Spring relies
   // upon classes being extendable to implement certain functionality.
-  id("org.jetbrains.kotlin.plugin.spring") version "2.3.21"
-  id("org.springframework.boot") version "4.0.6"
+  id("org.jetbrains.kotlin.plugin.spring") version "2.4.20"
+  id("org.springframework.boot") version "4.1.1"
   id("io.spring.dependency-management") version "1.1.7"
   id("com.github.node-gradle.node") version "7.1.0"
-  id("com.netflix.dgs.codegen") version "8.5.0"
+  id("com.netflix.dgs.codegen") version "8.6.0"
   id("io.entkt")
-  id("org.flywaydb.flyway") version "12.6.2"
-  id("io.github.caseymcguire.spa-routing") version "0.2.0"
+  id("org.flywaydb.flyway") version "13.5.0"
+  id("io.github.caseymcguire.spa-routing") version "0.3.0"
   id("java")
 }
 
@@ -67,7 +66,7 @@ springBoot {
 
 repositories {
   mavenCentral()
-  // EntKt and spa-routing artifacts are published to mavenLocal
+  // Also allow locally published spa-routing artifacts
   mavenLocal()
 }
 
@@ -88,7 +87,7 @@ dependencies {
   implementation("org.postgresql:postgresql:${postgresVersion}")
 
   implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("tools.jackson.module:jackson-module-kotlin")
 
   // spring-boot-starter-jdbc supplies the DataSource/HikariCP autoconfiguration (consumed by
   // DatabaseConfiguration and by Flyway). We deliberately avoid spring-boot-starter-data-jpa: this app
@@ -104,7 +103,7 @@ dependencies {
   // spa-routing: shared SPA route definitions (single source of truth) + the Spring Boot
   // starter that serves them. The starter pulls in spa-routing-core and the autoconfigure.
   implementation(project(":spa-route-definitions"))
-  implementation("io.github.caseymcguire:spa-routing-spring-boot-starter:0.2.0")
+  implementation("io.github.caseymcguire:spa-routing-spring-boot-starter:0.3.0")
 
   // Testing. The spring-boot-* artifacts are versioned by the spring-boot-dependencies BOM; the
   // org.testcontainers:* modules are pinned to $testcontainersVersion (see the note by its declaration).
@@ -123,8 +122,15 @@ java {
 kotlin {
   jvmToolchain(javaVersion)
   compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_21)
+    jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
   }
+}
+
+// Code generation loads the compiled route definitions in the Gradle daemon.
+// Keep its JVM aligned with the application's bytecode version.
+tasks.updateDaemonJvm {
+  languageVersion.set(JavaLanguageVersion.of(javaVersion))
+  toolchainDownloadUrls.empty()
 }
 
 tasks.withType<JavaCompile>().configureEach {

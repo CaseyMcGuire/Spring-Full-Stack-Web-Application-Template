@@ -3,7 +3,7 @@ plugins {
 }
 
 kotlin {
-  jvmToolchain(21)
+  jvmToolchain(26)
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
   mavenLocal()
 }
 
-val entktVersion: String by project
+val entktVersion = providers.gradleProperty("entktVersion").get()
 
 dependencies {
   implementation("io.entkt:schema:$entktVersion")

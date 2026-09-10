@@ -2,8 +2,6 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "alwaysStrict": true,
-    "baseUrl": "src/main/web-frontend",
-    "ignoreDeprecations": "6.0",
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
@@ -15,6 +13,14 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "*": [
+        "./src/main/web-frontend/*"
+      ]
+    },
+    "allowImportingTsExtensions": true
   }
 }
