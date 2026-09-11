@@ -3,6 +3,7 @@
 - Put each React component in its own file.
 - Keep each component's styles in its own `stylex.create()` call, except for shared themes.
 - Break components into logical subcomponents with focused responsibilities.
+- After imports, order each component file as: styles, extra data structures, props, then component code.
 
 - Frontend dependencies live in root `package.json`; commit corresponding `package-lock.json` changes.
 - After GraphQL schema, query, or fragment changes, run `./gradlew buildRelay` and commit `src/main/web-frontend/__generated__/`.
