@@ -19,8 +19,7 @@ class GraphiqlSpaConfig : SinglePageApplicationConfig {
   override val rules: List<SpaRouteRule> = listOf(AllowAll())
 
   // Overrides the shared AppSpaHtmlRenderer because this entry bundles its own CSS
-  // (GraphiQL's UI styles), which the page must link explicitly (see AGENTS.md,
-  // "How pages get their assets")
+  // (GraphiQL's UI styles), which the page must link explicitly (see docs/frontend.md)
   override fun renderHtml(): ServerResponse {
     val html = ReactPage(bundleName = application.bundleName, pageTitle = "GraphiQL")
       .customHead {
