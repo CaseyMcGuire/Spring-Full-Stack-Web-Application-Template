@@ -139,5 +139,4 @@ keep them in sync:
   `/__spa/route-decision`, so rules like "require login" are declared once on the server and
   enforced on direct loads and in-page navigations alike.
 
-Adding a route is one edit to the route definition; the codegen and starter keep everything else in
-step. See AGENTS.md for the mechanics.
+See [frontend assets and routing](docs/frontend.md) for adding routes, SPAs, and stylesheets.

@@ -30,7 +30,7 @@ The client uses Relay (not Apollo/urql/fetch): compiled queries, typed artifacts
 
 ## 5. Server-rendered HTML shell via kotlinx.html; assets referenced by fixed name
 
-Pages are served by Spring controllers rendering a kotlinx.html shell (`ReactPage.kt`) — there is no HTML plugin, no Vite manifest, and no Node server. The shell references bundles by fixed, unhashed names (`/bundles/<entry>.bundle.js`, `/bundles/stylex.generated.css`), so the Vite config pins output filenames and the two sides must stay in sync. See "How pages get their assets" in AGENTS.md.
+Pages are served by Spring controllers rendering a kotlinx.html shell (`ReactPage.kt`) — there is no HTML plugin, no Vite manifest, and no Node server. The shell references bundles by fixed, unhashed names (`/bundles/<entry>.bundle.js`, `/bundles/stylex.generated.css`), so the Vite config pins output filenames and the two sides must stay in sync. See [frontend assets and routing](../../docs/frontend.md).
 
 **Trade-off:** no content-hash cache busting on asset filenames, and renames must be made on both sides.
 
