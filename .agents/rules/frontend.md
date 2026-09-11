@@ -1,5 +1,9 @@
 # Frontend rules
 
+- Put each React component in its own file.
+- Keep each component's styles in its own `stylex.create()` call, except for shared themes.
+- Break components into logical subcomponents with focused responsibilities.
+
 - Frontend dependencies live in root `package.json`; commit corresponding `package-lock.json` changes.
 - After GraphQL schema, query, or fragment changes, run `./gradlew buildRelay` and commit `src/main/web-frontend/__generated__/`.
 - Routes and bundle entries originate in `spa-route-definitions/`. Run `./gradlew generateClientRoutes generateBundleEntries` after edits; `buildFrontend` and `watchFrontend` also regenerate them. Commit `src/main/web-frontend/routes/` and `SinglePageApplicationBundles.ts`.
