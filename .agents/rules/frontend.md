@@ -4,3 +4,4 @@
 - Keep each component's styles in its own `stylex.create()` call, except for shared themes.
 - Break components into logical subcomponents with focused responsibilities.
 - After imports, order each component file as: styles, extra data structures, props, then component code.
+- Always use braces and a multiline block for frontend `if` statements; do not write one-line `if` statements.
