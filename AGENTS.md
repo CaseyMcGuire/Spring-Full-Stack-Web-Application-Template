@@ -4,7 +4,9 @@ Kotlin/Spring Boot + DGS GraphQL, React/Relay, Postgres, EntKt, and Flyway. Grad
 
 ## Task scope
 
-Make the smallest complete change that satisfies the request. Only do additional work required for that change to function. Don't include unrelated cleanup, refactoring, dependency upgrades, or documentation changes. Mention nearby issues without fixing them. Ask before expanding scope.
+- Implement only what the user asks for, including the minimum supporting changes, required code generation, and focused validation needed for that request.
+- Broader project goals and earlier discussions provide context; they do not authorize implementing the next feature. Do not add adjacent functionality, refactor unrelated code, or introduce dependencies for work the user has not requested.
+- If the scope is ambiguous, prefer the smallest reasonable interpretation and ask before expanding it. Once the requested change is complete, stop and let the user decide the next step.
 
 ## Commands and setup
 
