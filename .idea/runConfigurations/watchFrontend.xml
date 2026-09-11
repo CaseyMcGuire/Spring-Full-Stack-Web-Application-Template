@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Vite Development - Watch" type="GradleRunConfiguration" factoryName="Gradle" nameIsGenerated="false">
+  <configuration default="false" name="watchFrontend" type="GradleRunConfiguration" factoryName="Gradle" nameIsGenerated="false">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
