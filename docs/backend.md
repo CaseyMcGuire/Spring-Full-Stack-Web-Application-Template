@@ -1,6 +1,6 @@
 # Backend guide
 
-Backend source lives under `src/main/kotlin/com/application/`. Read the [architecture walkthroughs](architecture.md) for the existing request paths and the [backend rules](../.agents/rules/backend.md) for constraints.
+Backend source lives under `src/main/kotlin/com/application/`. Read the [architecture guide](architecture.md) for how apps connect to the shared backend and the [backend rules](../.agents/rules/backend.md) for constraints.
 
 ## Spring and DGS
 

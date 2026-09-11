@@ -10,7 +10,7 @@ Kotlin/Spring Boot + DGS GraphQL, React/Relay, Postgres, EntKt, and Flyway. Grad
 
 ## Rules and project context
 
-When first working in this repo, read the [architecture guide](docs/architecture.md) for request flows, layer responsibilities, and code generation.
+When first working in this repo, read the [architecture guide](docs/architecture.md) for how apps, spa-routing, frontend bundles, and the shared backend fit together.
 
 Before planning or editing, read the rules and usage guide relevant to the task:
 
