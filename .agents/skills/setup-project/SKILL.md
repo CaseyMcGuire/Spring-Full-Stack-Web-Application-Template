@@ -1,6 +1,6 @@
 ---
 name: setup-project
-description: Set up a fresh clone of this Kotlin/Spring Boot, EntKt, React/Relay template for local development, including prerequisites, database configuration, dependencies, and a working app. Use for onboarding or fixing local setup, not dependency upgrades or deployment.
+description: Set up a fresh clone of this Kotlin/Spring Boot, EntKt, React/Relay template for local development, including root package selection, prerequisites, database configuration, dependencies, and a working app. Use for onboarding or fixing local setup, not dependency upgrades or deployment.
 ---
 
 # Set Up Project
@@ -11,6 +11,16 @@ Bring the requested checkout to a working local app. Run the setup, rather than 
 
 - Work from the requested repo root. Read `AGENTS.md`, the setup section of `README.md`, `build.gradle.kts`, `settings.gradle.kts`, `gradle/gradle-daemon-jvm.properties`, and `bin/setup_database` as needed.
 - Take Java, Node/npm, dependency, and test-container versions from the checkout; do not substitute the newest releases. The current build downloads Gradle and Node/npm itself. Java must be installed and discoverable by Gradle.
+
+## Choose the root package
+
+Use the root package supplied by the user. When initializing a new project from the template and none was supplied, ask for a package such as `org.acme.product` or whether to keep `com.application`. Reuse an already customized checkout's package unless a rename is requested.
+
+When changing the package, before the first build:
+
+- Move the package directories and update package declarations and imports across `src/main/kotlin`, `src/test/kotlin`, `ent-schema/src/main/kotlin`, and `spa-route-definitions/src/main/kotlin`. Preserve subpackages and keep the Spring Boot entry point at the chosen root for component scanning.
+- The template infers `com.<singleFolder>` from `src/main/kotlin/com`. Replace that inference with an explicit Gradle `rootPackage` property and derive directory paths from the full dotted package. Update the Gradle group, both `MainKt` entry-point settings, DGS and EntKt output packages, and spa-routing's definition source directory and generated Kotlin package.
+- Update current documentation links, test commands, and agent instructions tied to the old package or folder assumption. Regenerate generated code through the build; do not rename it by hand.
 
 ## Configure local prerequisites
 
@@ -43,20 +53,27 @@ Replace the example names and port to match the chosen local database. The helpe
 
 ## Install, launch, and verify
 
-Run these sequentially from the repo root:
+From the repo root, install frontend dependencies:
 
 ```sh
 ./gradlew npm_ci
-./gradlew bootRun
 ```
 
 The explicit clean install ensures frontend tooling exists before bundling. Respect the checked-in lockfile; setup is not an opportunity to upgrade dependencies. On an already configured checkout, reinstall only if needed.
+
+If the root package changed, run `./gradlew clean compileTestKotlin` to regenerate and compile production and test code under the chosen package. This compilation check does not require Docker.
+
+Then start the app:
+
+```sh
+./gradlew bootRun
+```
 
 `bootRun` generates EntKt entities, DGS types, routes, and bundle entries; builds the frontend; applies Flyway migrations; and starts the server. Relay artifacts are committed, so a fresh clone does not need a separate Relay compile. Never hand-edit generated output.
 
 - Keep the long-running process observable. Wait for successful startup or an actionable error. If the intended port is occupied, reuse the app when appropriate or choose another port with `--args='--server.port=18080'`; do not kill an unrelated process.
 - Verify `/` and `/graphiql` in a browser when available. The home page loads data through Relay; seeing its actual welcome message verifies more than an HTTP 200. Execute a read-only query from the checked-in schema in GraphiQL to check the API, or use an HTTP request with the app's existing CSRF cookie/header flow. Preserve security settings.
 - If Docker is running, run `./gradlew test`. If it is unavailable, report that integration tests were not run; this does not prevent verifying the app against local PostgreSQL.
-- Finish with the working URL, configuration files created, checks passed or skipped, and how to stop the process you started. Leave the requested development app running. If blocked, report the specific missing prerequisite or error and the remaining step; do not claim setup succeeded.
+- Finish with the working URL, chosen root package, configuration files created, checks passed or skipped, and how to stop the process you started. Leave the requested development app running. If blocked, report the specific missing prerequisite or error and the remaining step; do not claim setup succeeded.
 
 For subsequent work: `./gradlew watchFrontend` rebuilds and typechecks in a second terminal; refresh the browser. Run `./gradlew buildRelay` after changing GraphQL queries or schema.
