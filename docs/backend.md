@@ -41,6 +41,8 @@ For operations requiring a transaction, `entClient.withTransaction { tx -> ... }
 
 Flyway applies the SQL migrations in [db/migration](../src/main/resources/db/migration/), either at application startup or through `./gradlew flywayMigrate`. [DatabaseConfiguration](../src/main/kotlin/com/application/config/DatabaseConfiguration.kt) disables EntKt automatic DDL.
 
+Name versioned migrations `V<N>__description.sql`, using the next number after the highest existing version. Each version is applied once; subsequent changes go in a new migration.
+
 To change storage, edit the EntKt definition and add the next numbered migration, apply it, then compile the backend. Physical column types and constraints come from the migration: the current string fields map to SQL `VARCHAR(255)` columns. `generateEntkt` and `validateEntSchemas` operate on definitions and do not require a live database. See the [generation map](architecture.md#sources-and-generated-outputs) for output ownership.
 
 ## Authentication and authorization
