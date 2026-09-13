@@ -1,6 +1,6 @@
 ---
 name: setup-project
-description: Set up a fresh clone of this Kotlin/Spring Boot, EntKt, React/Relay template for local development, including root package selection, prerequisites, database configuration, dependencies, and a working app. Use for onboarding or fixing local setup, not dependency upgrades or deployment.
+description: Set up a fresh clone of this Kotlin/Spring Boot, EntKt, React/Relay template for local development, including project naming, root package selection, prerequisites, database configuration, dependencies, and a working app. Use for onboarding or fixing local setup, not dependency upgrades or deployment.
 ---
 
 # Set Up Project
@@ -11,6 +11,14 @@ Bring the requested checkout to a working local app. Run the setup, rather than 
 
 - Work from the requested repo root. Read `AGENTS.md`, the setup section of `README.md`, `build.gradle.kts`, `settings.gradle.kts`, `gradle/gradle-daemon-jvm.properties`, and `bin/setup_database` as needed.
 - Take Java, Node/npm, dependency, and test-container versions from the checkout; do not substitute the newest releases. The current build downloads Gradle and Node/npm itself. Java must be installed and discoverable by Gradle.
+
+## Choose the project name
+
+When initializing a new project, use the name supplied in the request or ask the user what the project should be called. Collect this together with the root-package choice when both are missing. Reuse an already customized project's name unless a rename is requested.
+
+Set `rootProject.name` in `settings.gradle.kts` to the chosen name and write the same name to `.idea/.name`, creating that file and its directory if missing. Verify the two names match. The project name is independent of the Kotlin root package.
+
+If IntelliJ is already open, let the user know to reload the Gradle project and reopen the project if its displayed name has not refreshed.
 
 ## Choose the root package
 
@@ -74,6 +82,6 @@ Then start the app:
 - Keep the long-running process observable. Wait for successful startup or an actionable error. If the intended port is occupied, reuse the app when appropriate or choose another port with `--args='--server.port=18080'`; do not kill an unrelated process.
 - Verify `/` and `/graphiql` in a browser when available. The home page loads data through Relay; seeing its actual welcome message verifies more than an HTTP 200. Execute a read-only query from the checked-in schema in GraphiQL to check the API, or use an HTTP request with the app's existing CSRF cookie/header flow. Preserve security settings.
 - If Docker is running, run `./gradlew test`. If it is unavailable, report that integration tests were not run; this does not prevent verifying the app against local PostgreSQL.
-- Finish with the working URL, chosen root package, configuration files created, checks passed or skipped, and how to stop the process you started. Leave the requested development app running. If blocked, report the specific missing prerequisite or error and the remaining step; do not claim setup succeeded.
+- Finish with the working URL, chosen project name and root package, configuration files created, checks passed or skipped, and how to stop the process you started. Leave the requested development app running. If blocked, report the specific missing prerequisite or error and the remaining step; do not claim setup succeeded.
 
 For subsequent work: `./gradlew watchFrontend` rebuilds and typechecks in a second terminal; refresh the browser. Run `./gradlew buildRelay` after changing GraphQL queries or schema.
